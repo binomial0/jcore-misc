@@ -19,10 +19,10 @@ def changeParentVersion(pTree, toVersion, fromVersion, pName, xlmns):
                         if (fromVersion == v.text):
                             v.text = toVersion
                             print("[parent POM] %s changed version:\n\t from %s to %s"
-                                %(pName, fromVersion,toVersion))
+                                %(pName, fromVersion, toVersion))
                         else:
                             print("[ERROR] %s parent POM version is:\n\t %s but argument input said it should be %s."
-                                %(pName, v.text,fromVersion))
+                                %(pName, v.text, fromVersion))
 
 def deleteSelfVersion(pTree, pName, xlmns):
     for p in pTree.iter(tag=xlmns+"project"):
@@ -31,8 +31,21 @@ def deleteSelfVersion(pTree, pName, xlmns):
                 p.remove(child)
                 print("[self version] %s: removed individual version." %(pName))
 
-def changeDependenciesVersion():
-
+def changeDependenciesVersion(pTree, pName, xlmns):
+    for p in pTree.iter(tag=xlmns+"project"):
+        for child in p:
+            if nodeHasTag(child,"dependencies",xlmns):
+                for dep in child:
+                    for v in dep:
+                        if nodeHasTag(v,"artifactId",xlmns):
+                            dName = v.text
+                        if nodeHasTag(v,"version",xlmns):
+                            nText = "${jcore-version}"
+                            if (dName.split("-")[0] == "jcore"):
+                                if (v.text != nText):
+                                    print("[dependencies version] %s:\n\t changed %s version: %s -> %s"
+                                        %(pName, dName, v.text, nText))
+                                    v.text = nText
 
 def nodeHasTag(node, name, xlmns):
     if (node.tag == xlmns+name):
@@ -53,6 +66,7 @@ if (__name__ == "__main__"):
 
                 changeParentVersion(tree, toVersion, fromVersion, project, xlmns)
                 deleteSelfVersion(tree, project, xlmns)
+                changeDependenciesVersion(tree, project, xlmns)
 
                 tree.write(pomFile,encoding="UTF-8",xml_declaration=True,
                                     default_namespace=xlmns[1:-1])
