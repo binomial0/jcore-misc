@@ -1,0 +1,297 @@
+{
+    "collection reader": {
+        "ace": {
+            "desc": "de.julielab.jcore.reader.ace.desc.jcore-ace",
+            "name": "JCoRe ACE Reader",
+            "mandatory": [
+                {"name": "inputDirectory",
+                "type": "string",
+                "default": "data/ACEData"}
+                ],
+            "optional": [
+                {"name": "generateJcoreTypes",
+                "type": "boolean",
+                "default": "true"}
+                ]
+            },
+
+        "muc7": {
+            "desc": "de.julielab.jcore.reader.muc7.desc.jcore-muc7",
+            "name": "JCoRe MUC7 Reader",
+            "mandatory": [
+                {"name": "InputDirectory",
+                "type": "string",
+                "default": "data/MUC7Data"}
+                ],
+            "optional": [
+                {"name": "generateJcoreTypes",
+                "type": "boolean",
+                "default": "true"}
+                ]
+            },
+
+        "bionlpst": {
+            "desc": "de.julielab.jcore.reader.bionlp09event.desc.jcore-bionlp09event-reader",
+            "name": "JCoRe BioNLP ST Reader",
+            "mandatory": [
+                {"name": "inDirectory",
+                "type": "string",
+                "default": "data/BioNLPinData"}
+                ],
+            "optional": [
+                {"name": "bioEventServiceMode",
+                "type": "boolean",
+                "default": "false"},
+                {"name": "abstractFile",
+                "type": "string",
+                "default": "none"},
+                {"name": "proteinFile",
+                "type": "string",
+                "default": "none"}
+                ]
+            },
+
+        "iexml": {
+            "desc": "de.julielab.jcore.reader.iexml.desc.jcore-iexml-reader",
+            "name": "JCoRe IEXML Reader",
+            "mandatory": [
+                {"name": "inputFile",
+                "type": "string",
+                "default": "data/mantra-input.xml"}
+                ],
+            "optional": [
+                {"name": "maxRecordsCount",
+                "type": "integer",
+                "default": "1000"}
+                ]
+            },
+
+        "pubmed": {
+            "desc": "de.julielab.jcore.reader.xml.desc.jcore-pubmed-reader",
+            "name": "JCoRe PubMed Reader",
+            "mandatory": [
+                {"name": "InputDirectory",
+                "type": "string",
+                "default": "pubmed-xml"},
+                {"name": "MappingFile",
+                "type": "string",
+                "default": "/de/julielab/jcore/reader/xml/mapping/pubmedMappingFile.xml"}
+                ],
+            "optional": []
+            },
+
+        "medline": {
+            "desc": "de.julielab.jcore.reader.xml.desc.jcore-medline-reader",
+            "name": "JCoRe Medline Reader",
+            "mandatory": [
+                {"name": "InputDirectory",
+                "type": "string",
+                "default": "medline-xml"},
+                {"name": "MappingFile",
+                "type": "string",
+                "default": "/de/julielab/jcore/reader/xml/mapping/medlineMappingFile.xml"}
+                ],
+            "optional": []
+            },
+
+        "file": {
+            "desc": "de.julielab.jcore.reader.file.desc.jcore-file.reader",
+            "name": "JCoRe File Reader",
+            "mandatory": [
+                {"name": "InputDirectory",
+                "type": "string",
+                "default": "data/files/"}
+                ],
+            "optional": [
+                {"name": "UseFilenameAsDocId",
+                "type": "boolean",
+                "default": "false"},
+                {"name": "PublicationDatesAsFile",
+                "type": "string",
+                "default": "data/publicationDates"}
+                ]
+            }
+    },
+
+    "analysis engine": {
+        "biosem_11": {
+            "desc": "de.julielab.jcore.",
+            "name": "JCoRe NAME",
+            "model": "BioNLP ST 2011",
+            "mandatory": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ],
+            "optional": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ]
+            },
+
+        "jnet_pennbio": {
+            "desc": "de.julielab.jcore.",
+            "name": "JCoRe NAME",
+            "model": "PennBio",
+            "mandatory": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ],
+            "optional": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ]
+            },
+
+        "jpos_framed": {
+            "desc": "de.julielab.jcore.",
+            "name": "JCoRe NAME",
+            "model": "FraMed",
+            "mandatory": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ],
+            "optional": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ]
+            },
+
+        "jsbd": {
+            "desc": "de.julielab.jcore.",
+            "name": "JCoRe NAME",
+            "model": "n.a.",
+            "mandatory": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ],
+            "optional": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ]
+            },
+
+        "jtbd": {
+            "desc": "de.julielab.jcore.",
+            "name": "JCoRe NAME",
+            "model": "n.a.",
+            "mandatory": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ],
+            "optional": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ]
+            },
+
+        "mst_genia": {
+            "desc": "de.julielab.jcore.",
+            "name": "JCoRe NAME",
+            "model": "GENIA 2008",
+            "mandatory": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ],
+            "optional": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ]
+            },
+
+        "opennlp_chunk_genia": {
+            "desc": "de.julielab.jcore.",
+            "name": "JCoRe NAME",
+            "model": "GENIA",
+            "mandatory": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ],
+            "optional": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ]
+            },
+
+        "opennlp_parser_genia": {
+            "desc": "de.julielab.jcore.",
+            "name": "JCoRe NAME",
+            "model": "GENIA 2009",
+            "mandatory": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ],
+            "optional": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ]
+            },
+
+        "opennlp_pos_pennbio:": {
+            "desc": "de.julielab.jcore.",
+            "name": "JCoRe NAME",
+            "model": "PennBioIE",
+            "mandatory": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ],
+            "optional": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ]
+            },
+
+        "opennlp_sentence": {
+            "desc": "de.julielab.jcore.",
+            "name": "JCoRe NAME",
+            "model": "n.a.",
+            "mandatory": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ],
+            "optional": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ]
+            },
+
+        "opennlp_token": {
+            "desc": "de.julielab.jcore.",
+            "name": "JCoRe NAME",
+            "model": "n.a.",
+            "mandatory": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ],
+            "optional": [
+                {"name": "NAME",
+                "type": "TYPE",
+                "default": "DEFAULT"}
+                ]
+            }
+    },
+
+    "cas consumer": {
+
+    }
+}
