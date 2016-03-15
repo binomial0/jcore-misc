@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
 
-DESC_NAME = "SOME-DESC-NAME"
-NAME_VALUE_PAIR = "SOME-NAME-VALUE-PAIR"
-NAME = "SOME-NAME"
-TYPE = "SOME-TYPE"
-VALUE = "SOME-VALUE"
-CAS_PROC = "SOME-CAS-PROCESSOR"
-CONFIG_PARAMS = "SOME-CONFIG-PARAM"
+import json
 
 ### HEADER ###
 HEAD =\
 """<?xml version="1.0" encoding="UTF-8"?>
 <cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
 """
+
 
 ### END ###
 END =\
@@ -26,6 +21,24 @@ END =\
 </cpeDescription>"""
 
 
+### PROJECTS COORDINATES ###
+JCOORDS = None
+with open('coordinates.json') as jfile:
+    JCOORDS = json.load(jfile)
+
+C_MAP = {
+    "cr": {},
+    "ae": {},
+    "cc": {}
+    }
+
+A_MAP = {
+    "cr": int,
+    "ae": [],
+    "cc": int
+    }
+
+### BUILDING FUNCTIONS ###
 def buildValue(vType, vValue):
     # e.g. <string>data/inFiles</string>
     VALUE =\
@@ -106,17 +119,43 @@ def buildCASProc(casName, casDescName, casCP):
     return CAS_PROC
 
 
-testDesc = "de.julielab.jcore.reader.file.desc.jcore-file-reader"
-testValueName = "InputDirectory"
-testValueType = "string"
-testValue = "data/inFiles"
+def getComponent(component="ae"):
+    c_dict = {
+        "cr": "Collection Reader",
+        "ae": "Analysis Engine",
+        "cc": "Collection Consumer"
+        }
+    comp_string = ""
+    comps = JCOORDS[(c_dict[component]).lower()]
+    count = 0
+    for i in sorted(list(comps.keys())):
+        C_MAP[component][count] = i
+        comp_string += "\t[{:>2}] {}\n".format(count, comps[i]["name"])
+        count += 1
 
-cr = buildCollectionReader(testDesc,
-        buildConfigParams(
-            buildNameValue(testValueName,
-                buildValue(testValueType, testValue)
-                )
-            )
-        )
+    cr = input(
+    """Choose a(n) {} from the following list:
+    {}Choice (q for quit): """.format(c_dict[component], comp_string)
+    )
 
-print(buildCASProcs([1,2]))
+    return cr
+
+
+def displayPipeline():
+    ac = None
+    while ac is None or ac.lower() not in ["r", "a", "c"]:
+        ac = input(("""The current pipeline consists of\n""" +
+                    """Collection Reader:\n\t{}""" +
+                    """Analysis Engine(s):\n\t{}""" +
+                    """Collection Consumer:\n\t{}""" +
+                    """modify (r)eader, (a)nalysis engines or (c)onsumers: """
+                    ).format("aa\n",
+                             "bb\n",
+                             "cc\n")
+                    )
+
+    return ac
+
+if __name__ == "__main__":
+    #getComponent()
+    displayPipeline()

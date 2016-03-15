@@ -115,9 +115,9 @@
 
     "analysis engine": {
         "biosem_11": {
-            "desc": "de.julielab.jcore.",
-            "name": "JCoRe NAME",
-            "model": "BioNLP ST 2011",
+            "desc": "de.julielab.jcore.ae.biosem.desc.jcore-biosem-ae-bionlp-st11",
+            "name": "JCoRe BioSEM AE",
+            "model": "BioNLP SharedTask 2011",
             "mandatory": [
                 {"name": "NAME",
                 "type": "TYPE",
