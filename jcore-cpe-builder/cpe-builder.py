@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import json
+import os
+import sys
 
 ### HEADER ###
 HEAD =\
@@ -27,15 +29,15 @@ with open('coordinates.json') as jfile:
     JCOORDS = json.load(jfile)
 
 C_MAP = {
-    "cr": {},
-    "ae": {},
-    "cc": {}
+    "cr": {"None": "None"},
+    "ae": {"None": "None"},
+    "cc": {"None": "None"}
     }
 
 A_MAP = {
-    "cr": int,
-    "ae": [],
-    "cc": int
+    "cr": "None",
+    "ae": ["None"],
+    "cc": "None"
     }
 
 ### BUILDING FUNCTIONS ###
@@ -119,43 +121,107 @@ def buildCASProc(casName, casDescName, casCP):
     return CAS_PROC
 
 
+def clearScreen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def removeLastComponent(component):
+    if component == "ae":
+        tmp = A_MAP[component].pop()
+        if (tmp is "None") or (len(A_MAP[component]) == 0):
+            A_MAP[component].append("None")
+    else:
+        A_MAP[component] = "None"
+
+
+def getCompName(component, index):
+    c_dict = {
+        "cr": "Collection Reader",
+        "ae": "Analysis Engine",
+        "cc": "CAS Consumer"
+        }
+    name = "None"
+    jShort = C_MAP[component][index]
+    if jShort != "None":
+        name = JCOORDS[(c_dict[component]).lower()][jShort]["name"]
+
+    return name
+
+
 def getComponent(component="ae"):
     c_dict = {
         "cr": "Collection Reader",
         "ae": "Analysis Engine",
-        "cc": "Collection Consumer"
+        "cc": "CAS Consumer"
         }
     comp_string = ""
     comps = JCOORDS[(c_dict[component]).lower()]
     count = 0
     for i in sorted(list(comps.keys())):
-        C_MAP[component][count] = i
+        C_MAP[component][str(count)] = i
         comp_string += "\t[{:>2}] {}\n".format(count, comps[i]["name"])
         count += 1
 
-    cr = input(
-    """Choose a(n) {} from the following list:
-    {}Choice (q for quit): """.format(c_dict[component], comp_string)
-    )
+    cr = None
+    choice = """Choose a {} from the following list:"""
+    if component == "ae":
+        choice = """Add an {} from the following list:"""
 
-    return cr
+    while cr is None or cr not in ["q", "b"]:
+        displayPipeline()
+        cr = input(
+        (choice +
+         """\n{}\nChoice (b for 'back to previous'; q for 'quit'; """ +
+         """r for 'remove last'): """)
+        .format(c_dict[component], comp_string)
+        )
+        cr = cr.lower()
+        if cr in [str(x) for x in range(len(C_MAP[component]) - 1)]:
+            if component == "ae":
+                if "None" in A_MAP[component]:
+                    A_MAP[component].remove("None")
+                A_MAP[component].append(cr)
+            else:
+                A_MAP[component] = cr
+
+        if cr == "r":
+            removeLastComponent(component)
+
+    if cr == "q":
+        sys.exit()
+    elif cr == "b":
+        modifyPipeline()
 
 
 def displayPipeline():
-    ac = None
-    while ac is None or ac.lower() not in ["r", "a", "c"]:
-        ac = input(("""The current pipeline consists of\n""" +
-                    """Collection Reader:\n\t{}""" +
-                    """Analysis Engine(s):\n\t{}""" +
-                    """Collection Consumer:\n\t{}""" +
-                    """modify (r)eader, (a)nalysis engines or (c)onsumers: """
-                    ).format("aa\n",
-                             "bb\n",
-                             "cc\n")
-                    )
+    clearScreen()
+    print(("""The current pipeline consists of\n""" +
+           """Collection Reader:\n\t{}""" +
+           """Analysis Engine(s):\n\t{}""" +
+           """Collection Consumer:\n\t{}"""
+           ).format(getCompName("cr", A_MAP["cr"]) + "\n",
+                ", ".join([getCompName("ae", x) for x in A_MAP["ae"]]) + "\n",
+                getCompName("cc", A_MAP["cc"]) + "\n")
+           )
 
-    return ac
+
+def modifyPipeline():
+    ac = None
+    while ac is None or ac not in ["r", "a", "c", "q"]:
+        displayPipeline()
+        ac = input("""modify (r)eader, (a)nalysis engines or (c)onsumer """ +
+                    """(q for quit): """)
+        ac = ac.lower()
+
+    if ac == "q":
+        sys.exit()
+    elif ac == "r":
+        getComponent("cr")
+    elif ac == "c":
+        getComponent("cc")
+    else:
+        getComponent()
 
 if __name__ == "__main__":
     #getComponent()
-    displayPipeline()
+    modifyPipeline()

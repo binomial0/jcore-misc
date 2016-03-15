@@ -292,6 +292,25 @@
     },
 
     "cas consumer": {
-
+        "bionlpst": {
+            "desc": "de.julielab.jcore.consumer.",
+            "name": "JCoRe BioNLP ST Consumer",
+            "mandatory": [
+                {"name": "outDirectory",
+                "type": "string",
+                "default": "data/BioNLPinData"}
+                ],
+            "optional": [
+                {"name": "bioEventServiceMode",
+                "type": "boolean",
+                "default": "false"},
+                {"name": "abstractFile",
+                "type": "string",
+                "default": "none"},
+                {"name": "proteinFile",
+                "type": "string",
+                "default": "none"}
+                ]
+            }
     }
 }
