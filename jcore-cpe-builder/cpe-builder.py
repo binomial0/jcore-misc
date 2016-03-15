@@ -4,6 +4,8 @@ import json
 import os
 import sys
 
+DEBUG = False
+
 ### HEADER ###
 HEAD =\
 """<?xml version="1.0" encoding="UTF-8"?>
@@ -52,12 +54,12 @@ def buildValue(vType, vValue):
 def buildNameValue(nvName, nvValue):
     # e.g. NAME = InputDirectory
     NAME_VALUE_PAIR =\
-    """<nameValuePair>
+    """                    <nameValuePair>
                         <name>{}</name>
                         <value>
                             {}
                         </value>
-                    </nameValuePair>""".format(nvName, nvValue)
+                    </nameValuePair>\n""".format(nvName, nvValue)
 
     return NAME_VALUE_PAIR
 
@@ -65,13 +67,25 @@ def buildNameValue(nvName, nvValue):
 def buildConfigParams(cpNameValue):
     CONFIG_PARAMS =\
     """<configurationParameterSettings>
-                    {}
+{}
                 </configurationParameterSettings>""".format(cpNameValue)
     return CONFIG_PARAMS
 
 
-def buildCollectionReader(crDescName, crConfigParams):
-    # e.g. DESC_NAME=de.julielab.jcore.reader.file.desc.jcore-file-reader
+def buildCollectionReader(cr_dict):
+    # e.g. cDescName=de.julielab.jcore.reader.file.desc.jcore-file-reader
+    crDescName = cr_dict["desc"]
+    crConfigParams = ""
+    cr_param_list = []
+
+    for i in ["mandatory", "optional"]:
+        cr_param_list.extend(cr_dict[i])
+    for param in cr_param_list:
+        nv_pair = buildNameValue(param["name"],
+            buildValue(param["type"], param["default"]))
+        crConfigParams += nv_pair
+    crConfigParams = crConfigParams.rstrip('\n')
+    crConfigParams = buildConfigParams(crConfigParams)
     CR =\
     """        <collectionReader>
             <collectionIterator>
@@ -121,6 +135,13 @@ def buildCASProc(casName, casDescName, casCP):
     return CAS_PROC
 
 
+def quitSystem():
+    if DEBUG:
+        print("\n[DEBUG] Map of Components:")
+        print(A_MAP)
+    sys.exit()
+
+
 def clearScreen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -167,11 +188,11 @@ def getComponent(component="ae"):
     if component == "ae":
         choice = """Add an {} from the following list:"""
 
-    while cr is None or cr not in ["q", "b"]:
+    while cr is None or cr not in ["q", "p"]:
         displayPipeline()
         cr = input(
         (choice +
-         """\n{}\nChoice (b for 'back to previous'; q for 'quit'; """ +
+         """\n{}\nChoice (p for 'back to previous'; q for 'quit'; """ +
          """r for 'remove last'): """)
         .format(c_dict[component], comp_string)
         )
@@ -188,8 +209,8 @@ def getComponent(component="ae"):
             removeLastComponent(component)
 
     if cr == "q":
-        sys.exit()
-    elif cr == "b":
+        quitSystem()
+    elif cr == "p":
         modifyPipeline()
 
 
@@ -207,21 +228,42 @@ def displayPipeline():
 
 def modifyPipeline():
     ac = None
-    while ac is None or ac not in ["r", "a", "c", "q"]:
+    while ac is None or ac not in ["r", "a", "c", "q", "n"]:
         displayPipeline()
-        ac = input("""modify (r)eader, (a)nalysis engines or (c)onsumer """ +
-                    """(q for quit): """)
+        ac = input("""modify (r)eader, (a)nalysis engines or (c)onsumer\n""" +
+                    """(n for 'build current pipeline'; q for 'quit'): """)
         ac = ac.lower()
 
     if ac == "q":
-        sys.exit()
+        quitSystem()
     elif ac == "r":
         getComponent("cr")
     elif ac == "c":
         getComponent("cc")
+    elif ac == "n":
+        if DEBUG:
+            print("\n[DEBUG] Map of Components:")
+            print(A_MAP)
+        pass
     else:
         getComponent()
 
+
+def buildCurrentPipeline():
+    # COLLECTION READER
+    cr = None
+    cr_key = C_MAP["cr"][A_MAP["cr"]]
+    if cr_key.lower() != "none":
+        cr = JCOORDS["collection reader"][cr_key]
+        cr_string = buildCollectionReader(cr)
+    print(cr_string)
+
+
 if __name__ == "__main__":
-    #getComponent()
+    if len(sys.argv) > 1:
+        if sys.argv[1].lower() == "true":
+            DEBUG = True
+
     modifyPipeline()
+    print("\nbuild pipeline ...")
+    buildCurrentPipeline()

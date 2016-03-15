@@ -109,7 +109,9 @@
                 {"name": "PublicationDatesAsFile",
                 "type": "string",
                 "default": "data/publicationDates"}
-                ]
+                ],
+            "capabilities": {
+                }
             }
     },
 
