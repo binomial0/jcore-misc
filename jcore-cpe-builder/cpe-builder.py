@@ -7,22 +7,22 @@ import sys
 DEBUG = False
 
 ### HEADER ###
-HEAD =\
-"""<?xml version="1.0" encoding="UTF-8"?>
-<cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
-"""
+HEAD = (
+"""<?xml version="1.0" encoding="UTF-8"?>\n""" +
+"""<cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">\n"""
+)
 
 
 ### END ###
-END =\
-"""
-    <cpeConfig>
-        <numToProcess>-1</numToProcess>
-        <deployAs>immediate</deployAs>
-        <checkpoint batch="0" time="300000ms"/>
-        <timerImpl/>
-    </cpeConfig>
-</cpeDescription>"""
+END = (
+"""<cpeConfig>\n""" +
+"""    <numToProcess>-1</numToProcess>\n""" +
+"""        <deployAs>immediate</deployAs>\n""" +
+"""        <checkpoint batch="0" time="300000ms"/>\n""" +
+"""        <timerImpl/>\n""" +
+"""    </cpeConfig>\n""" +
+"""</cpeDescription>\n"""
+)
 
 
 ### PROJECTS COORDINATES ###
@@ -42,68 +42,74 @@ A_MAP = {
     "cc": "None"
     }
 
+
 ### BUILDING FUNCTIONS ###
 def buildValue(vType, vValue):
     # e.g. <string>data/inFiles</string>
-    VALUE =\
-    """<{}>{}</{}>""".format(vType, vValue, vType)
+    VALUE = (
+    """<{}>{}</{}>\n"""
+    ).format(vType, vValue, vType)
 
     return VALUE
 
 
 def buildNameValue(nvName, nvValue):
     # e.g. NAME = InputDirectory
-    NAME_VALUE_PAIR =\
-    """                    <nameValuePair>
-                        <name>{}</name>
-                        <value>
-                            {}
-                        </value>
-                    </nameValuePair>\n""".format(nvName, nvValue)
+    NAME_VALUE_PAIR = (
+    """<nameValuePair>\n""" +
+    """    <name>{}</name>\n""" +
+    """    <value>\n""" +
+    """        {}\n""" +
+    """    </value>\n""" +
+    """</nameValuePair>\n"""
+    ).format(nvName, nvValue)
 
     return NAME_VALUE_PAIR
 
 
-def buildConfigParams(cpNameValue):
+def buildConfigParams(cp_dict):
+    cp_string = ""
+    cp_param_list = []
+    for i in ["mandatory", "optional"]:
+        cp_param_list.extend(cp_dict[i])
+    for param in cp_param_list:
+        nv_pair = buildNameValue(param["name"],
+            buildValue(param["type"], param["default"]))
+        cp_string += nv_pair
+    cp_string = cp_string.rstrip('\n')
+
     CONFIG_PARAMS =\
     """<configurationParameterSettings>
 {}
-                </configurationParameterSettings>""".format(cpNameValue)
+            </configurationParameterSettings>""".format(cp_string)
     return CONFIG_PARAMS
 
 
 def buildCollectionReader(cr_dict):
     # e.g. cDescName=de.julielab.jcore.reader.file.desc.jcore-file-reader
     crDescName = cr_dict["desc"]
-    crConfigParams = ""
-    cr_param_list = []
+    crConfigParams = buildConfigParams(cr_dict)
 
-    for i in ["mandatory", "optional"]:
-        cr_param_list.extend(cr_dict[i])
-    for param in cr_param_list:
-        nv_pair = buildNameValue(param["name"],
-            buildValue(param["type"], param["default"]))
-        crConfigParams += nv_pair
-    crConfigParams = crConfigParams.rstrip('\n')
-    crConfigParams = buildConfigParams(crConfigParams)
     CR =\
-    """        <collectionReader>
-            <collectionIterator>
-                <descriptor>
-                    <import name="{}"/>
-                </descriptor>
-                {}
-            </collectionIterator>
-        </collectionReader>""".format(crDescName, crConfigParams)
+    """    <collectionReader>
+        <collectionIterator>
+            <descriptor>
+                <import name="{}"/>
+            </descriptor>
+            {}
+        </collectionIterator>
+    </collectionReader>""".format(crDescName, crConfigParams)
 
     return CR
 
 
 def buildCASProcs(casProcs):
+    procs = ""
     if isinstance(casProcs, list):
-        procs = ""
         for proc in casProcs:
-            procs += buildCASProc("name", "descName", "cp")
+            name = ", ".join([proc["name"], proc["model"]])
+            cp = buildConfigParams(proc)
+            procs += buildCASProc(name, proc["desc"], cp)
         procs = procs.rstrip("\n")
     else:
         pass
@@ -122,7 +128,7 @@ def buildCASProc(casName, casDescName, casCP):
                 <descriptor>
                     <import name="{}"/>
                 </descriptor>
-    {}
+        {}
                 <deploymentParameters/>
                 <errorHandling>
                     <errorRateThreshold action="terminate" value="0/1000"/>
@@ -253,10 +259,24 @@ def buildCurrentPipeline():
     # COLLECTION READER
     cr = None
     cr_key = C_MAP["cr"][A_MAP["cr"]]
+    cr_string = ""
     if cr_key.lower() != "none":
         cr = JCOORDS["collection reader"][cr_key]
         cr_string = buildCollectionReader(cr)
     print(cr_string)
+
+    # ANALYSIS ENGINES
+    ae_string = ""
+    ae_list = []
+    for ae_key in A_MAP["ae"]:
+        ae_key = C_MAP["ae"][ae_key]
+        ae = None
+        if ae_key.lower() != "none":
+            ae = JCOORDS["analysis engine"][ae_key]
+            ae_list.append(ae)
+    if len(ae_list) != 0:
+        ae_string = buildCASProcs(ae_list)
+    print(ae_string)
 
 
 if __name__ == "__main__":
