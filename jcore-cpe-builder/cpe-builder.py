@@ -5,6 +5,7 @@ import os
 import sys
 
 DEBUG = False
+WS = '\t'
 
 ### HEADER ###
 HEAD = (
@@ -16,11 +17,11 @@ HEAD = (
 ### END ###
 END = (
 """<cpeConfig>\n""" +
-"""    <numToProcess>-1</numToProcess>\n""" +
-"""        <deployAs>immediate</deployAs>\n""" +
-"""        <checkpoint batch="0" time="300000ms"/>\n""" +
-"""        <timerImpl/>\n""" +
-"""    </cpeConfig>\n""" +
+"""\t<numToProcess>-1</numToProcess>\n""" +
+"""\t\t<deployAs>immediate</deployAs>\n""" +
+"""\t\t<checkpoint batch="0" time="300000ms"/>\n""" +
+"""\t\t<timerImpl/>\n""" +
+"""\t</cpeConfig>\n""" +
 """</cpeDescription>\n"""
 )
 
@@ -47,58 +48,62 @@ A_MAP = {
 def buildValue(vType, vValue):
     # e.g. <string>data/inFiles</string>
     VALUE = (
-    """<{}>{}</{}>\n"""
+    """<{}>{}</{}>"""
     ).format(vType, vValue, vType)
 
     return VALUE
 
 
-def buildNameValue(nvName, nvValue):
+def buildNameValue(nvName, nvValue, tab=1):
     # e.g. NAME = InputDirectory
     NAME_VALUE_PAIR = (
-    """<nameValuePair>\n""" +
-    """    <name>{}</name>\n""" +
-    """    <value>\n""" +
-    """        {}\n""" +
-    """    </value>\n""" +
-    """</nameValuePair>\n"""
-    ).format(nvName, nvValue)
+    """{}<nameValuePair>\n""" +
+    """{}\t<name>{}</name>\n""" +
+    """{}\t<value>\n""" +
+    """{}\t\t{}\n""" +
+    """{}\t</value>\n""" +
+    """{}</nameValuePair>\n"""
+    ).format(tab * WS, tab * WS,
+             nvName, tab * WS, tab * WS,
+             nvValue, tab * WS, tab * WS)
 
     return NAME_VALUE_PAIR
 
 
-def buildConfigParams(cp_dict):
+def buildConfigParams(cp_dict,tab=1):
     cp_string = ""
     cp_param_list = []
     for i in ["mandatory", "optional"]:
         cp_param_list.extend(cp_dict[i])
     for param in cp_param_list:
         nv_pair = buildNameValue(param["name"],
-            buildValue(param["type"], param["default"]))
+            buildValue(param["type"], param["default"]), tab + 1)
         cp_string += nv_pair
     cp_string = cp_string.rstrip('\n')
 
-    CONFIG_PARAMS =\
-    """<configurationParameterSettings>
-{}
-            </configurationParameterSettings>""".format(cp_string)
+    CONFIG_PARAMS = (
+    """{}<configurationParameterSettings>\n""" +
+    """{}\n""" +
+    """{}</configurationParameterSettings>"""
+    ).format(tab * WS, cp_string, tab * WS)
+
     return CONFIG_PARAMS
 
 
 def buildCollectionReader(cr_dict):
     # e.g. cDescName=de.julielab.jcore.reader.file.desc.jcore-file-reader
     crDescName = cr_dict["desc"]
-    crConfigParams = buildConfigParams(cr_dict)
+    crConfigParams = buildConfigParams(cr_dict, 3)
 
-    CR =\
-    """    <collectionReader>
-        <collectionIterator>
-            <descriptor>
-                <import name="{}"/>
-            </descriptor>
-            {}
-        </collectionIterator>
-    </collectionReader>""".format(crDescName, crConfigParams)
+    CR = (
+    """\t<collectionReader>\n""" +
+    """\t\t<collectionIterator>\n""" +
+    """\t\t\t<descriptor>\n""" +
+    """\t\t\t\t<import name="{}"/>\n""" +
+    """\t\t\t</descriptor>\n""" +
+    """{}\n""" +
+    """\t\t</collectionIterator>\n""" +
+    """\t</collectionReader>\n""").format(crDescName, crConfigParams)
 
     return CR
 
@@ -108,35 +113,35 @@ def buildCASProcs(casProcs):
     if isinstance(casProcs, list):
         for proc in casProcs:
             name = ", ".join([proc["name"], proc["model"]])
-            cp = buildConfigParams(proc)
+            cp = buildConfigParams(proc, 3)
             procs += buildCASProc(name, proc["desc"], cp)
         procs = procs.rstrip("\n")
     else:
         pass
-    CAS_PROCS =\
-    """        <casProcessors casPoolSize="3" processingUnitThreadCount="1">
-{}
-        </casProcessors>""".format(procs)
+    CAS_PROCS = (
+    """\t<casProcessors casPoolSize="3" processingUnitThreadCount="1">\n""" +
+    """{}\n""" +
+    """\t</casProcessors>\n""").format(procs)
 
     return CAS_PROCS
 
 
 def buildCASProc(casName, casDescName, casCP):
     ### SINGLE CAS PROCESSOR ###
-    CAS_PROC =\
-    """            <casProcessor deployment="integrated" name="{}">
-                <descriptor>
-                    <import name="{}"/>
-                </descriptor>
-        {}
-                <deploymentParameters/>
-                <errorHandling>
-                    <errorRateThreshold action="terminate" value="0/1000"/>
-                    <maxConsecutiveRestarts action="terminate" value="30"/>
-                    <timeout max="100000" default="-1"/>
-                </errorHandling>
-                <checkpoint batch="10000" time="1000ms"/>
-            </casProcessor>\n""".format(casName, casDescName, casCP)
+    CAS_PROC = (
+    """\t\t<casProcessor deployment="integrated" name="{}">\n""" +
+    """\t\t\t<descriptor>\n""" +
+    """\t\t\t\t<import name="{}"/>\n""" +
+    """\t\t\t</descriptor>\n""" +
+    """{}\n""" +
+    """\t\t\t<deploymentParameters/>\n""" +
+    """\t\t\t<errorHandling>\n""" +
+    """\t\t\t\t<errorRateThreshold action="terminate" value="0/1000"/>\n""" +
+    """\t\t\t\t<maxConsecutiveRestarts action="terminate" value="30"/>\n""" +
+    """\t\t\t\t<timeout max="100000" default="-1"/>\n""" +
+    """\t\t\t</errorHandling>\n""" +
+    """\t\t\t<checkpoint batch="10000" time="1000ms"/>\n""" +
+    """\t\t</casProcessor>\n""").format(casName, casDescName, casCP)
 
     return CAS_PROC
 
@@ -263,7 +268,6 @@ def buildCurrentPipeline():
     if cr_key.lower() != "none":
         cr = JCOORDS["collection reader"][cr_key]
         cr_string = buildCollectionReader(cr)
-    print(cr_string)
 
     # ANALYSIS ENGINES
     ae_string = ""
@@ -276,7 +280,9 @@ def buildCurrentPipeline():
             ae_list.append(ae)
     if len(ae_list) != 0:
         ae_string = buildCASProcs(ae_list)
-    print(ae_string)
+
+    # write out
+    print(cr_string+ae_string)
 
 
 if __name__ == "__main__":
