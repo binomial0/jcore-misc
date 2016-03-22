@@ -3,6 +3,8 @@
 import json
 import os
 import sys
+import subprocess
+import shutil
 
 DEBUG = False
 WS = '\t'
@@ -34,8 +36,9 @@ with open('coordinates.json') as jfile:
     JCOORDS = json.load(jfile)
  # add short names (derived from key names) to components
 for component in list(JCOORDS.keys()):
-    for short in list(JCOORDS[component]):
-        JCOORDS[component][short]["short"] = short
+    if component != "jcore version":
+        for short in list(JCOORDS[component]):
+            JCOORDS[component][short]["short"] = short
 
 C_MAP = {
     "cr": {"None": "None"},
@@ -281,6 +284,17 @@ def modifyPipeline():
 
 
 def writePom():
+    dependencies = ""
+    for dep in DEP_LIST:
+        dependencies += (
+        """\t\t<dependency>\n""" +
+        """\t\t\t<groupId>de.julielab</groupId>\n""" +
+        """\t\t\t<artifactId>{}</artifactId>\n""" +
+        """\t\t\t<version>${{jcore-version}}</version>\n""" +
+        """\t\t</dependency>\n"""
+        ).format(dep)
+    dependencies = dependencies.rstrip("\n")
+
     out_string = (
         """<?xml version='1.0' encoding='UTF-8'?>\n""" +
         """<project xmlns="http://maven.apache.org/POM/4.0.0" """ +
@@ -296,12 +310,38 @@ def writePom():
         """\t<artifactId>{}</artifactId>\n""" +
         """\t<name>{}</name>\n""" +
         """\t<dependencies>\n""" +
-        """{}""" +
+        """{}\n""" +
         """\t</dependencies>\n""" +
         """</project>"""
-        ).format(jcoreVersion, artifactId, name, dependencies)
+        ).format(JCOORDS["jcore version"], PIPENAME + "-pipeline",
+                 JCOORDS["analysis engine"][PIPENAME]["name"], dependencies)
     with open("pom.xml", 'w') as out_file:
         out_file.write(out_string)
+
+
+def copyInstallScript():
+    iScript = os.path.abspath("../installComponents_template")
+    shutil.copy(iScript, "installComponents.sh")
+
+    subprocess.call(
+    ["chmod", "+x", "installComponents.sh"]
+    )
+
+
+def writeExecutionScript(cpeName):
+    xScript = (
+    """#!/bin/bash\n\n""" +
+    """java_libs=target/dependency\n\n""" +
+    """export CLASSPATH=`for i in $java_libs/*.jar; """ +
+    """do echo -n "$i:";done;echo -n ""`\n\n""" +
+    """$UIMA_HOME/bin/runCPE.sh {}""").format(cpeName)
+
+    with open("runPipeline.sh", 'w') as out_file:
+        out_file.write(xScript)
+
+    subprocess.call(
+        ["chmod", "+x", "runPipeline.sh"]
+        )
 
 
 def buildCurrentPipeline():
@@ -337,10 +377,18 @@ def buildCurrentPipeline():
         print("[DEBUG] List of Dependencies:\n{}".format(DEP_LIST))
 
     # write out
+    foo = "jcore-{}-pipeline".format(PIPENAME)
+    if not os.path.exists(foo):
+        os.mkdir(foo)
+    os.chdir(foo)
     fiName = "{}-cpe.xml".format(PIPENAME)
     out_string = HEAD + cr_string + ae_string + cc_string + END
     with open(fiName, 'w') as out_file:
         out_file.write(out_string)
+    writePom()
+    copyInstallScript()
+    writeExecutionScript(fiName)
+    os.chdir("..")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,6 @@
 {
+    "jcore version": "2.1.0",
+
     "collection reader": {
         "ace": {
             "desc": "de.julielab.jcore.reader.ace.desc.jcore-ace",
