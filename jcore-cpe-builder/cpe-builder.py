@@ -314,7 +314,8 @@ def writePom():
         """\t</dependencies>\n""" +
         """</project>"""
         ).format(JCOORDS["jcore version"], PIPENAME + "-pipeline",
-                 JCOORDS["analysis engine"][PIPENAME]["name"], dependencies)
+                 JCOORDS["analysis engine"][PIPENAME]["name"] + " Pipeline",
+                 dependencies)
     with open("pom.xml", 'w') as out_file:
         out_file.write(out_string)
 
