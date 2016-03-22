@@ -6,6 +6,8 @@ import sys
 
 DEBUG = False
 WS = '\t'
+PIPENAME = ""
+DEP_LIST = []
 
 ### HEADER ###
 HEAD = (
@@ -16,8 +18,8 @@ HEAD = (
 
 ### END ###
 END = (
-"""<cpeConfig>\n""" +
-"""\t<numToProcess>-1</numToProcess>\n""" +
+"""\t<cpeConfig>\n""" +
+"""\t\t<numToProcess>-1</numToProcess>\n""" +
 """\t\t<deployAs>immediate</deployAs>\n""" +
 """\t\t<checkpoint batch="0" time="300000ms"/>\n""" +
 """\t\t<timerImpl/>\n""" +
@@ -30,6 +32,10 @@ END = (
 JCOORDS = None
 with open('coordinates.json') as jfile:
     JCOORDS = json.load(jfile)
+ # add short names (derived from key names) to components
+for component in list(JCOORDS.keys()):
+    for short in list(JCOORDS[component]):
+        JCOORDS[component][short]["short"] = short
 
 C_MAP = {
     "cr": {"None": "None"},
@@ -70,7 +76,7 @@ def buildNameValue(nvName, nvValue, tab=1):
     return NAME_VALUE_PAIR
 
 
-def buildConfigParams(cp_dict,tab=1):
+def buildConfigParams(cp_dict, tab=1):
     cp_string = ""
     cp_param_list = []
     for i in ["mandatory", "optional"]:
@@ -91,8 +97,10 @@ def buildConfigParams(cp_dict,tab=1):
 
 
 def buildCollectionReader(cr_dict):
+    global DEP_LIST
     # e.g. cDescName=de.julielab.jcore.reader.file.desc.jcore-file-reader
     crDescName = cr_dict["desc"]
+    DEP_LIST.append(crDescName.split('.')[-1])
     crConfigParams = buildConfigParams(cr_dict, 3)
 
     CR = (
@@ -108,20 +116,32 @@ def buildCollectionReader(cr_dict):
     return CR
 
 
-def buildCASProcs(casProcs):
+def buildCASProcs(casProcs, is_ae=True):
+    global PIPENAME
+    global DEP_LIST
     procs = ""
     if isinstance(casProcs, list):
+        PIPENAME = casProcs[-1]["short"]
         for proc in casProcs:
+            cpDescName = proc["desc"]
             name = ", ".join([proc["name"], proc["model"]])
             cp = buildConfigParams(proc, 3)
-            procs += buildCASProc(name, proc["desc"], cp)
+            procs += buildCASProc(name, cpDescName, cp)
+            DEP_LIST.append(cpDescName.split('.')[-1])
         procs = procs.rstrip("\n")
     else:
-        pass
-    CAS_PROCS = (
-    """\t<casProcessors casPoolSize="3" processingUnitThreadCount="1">\n""" +
-    """{}\n""" +
-    """\t</casProcessors>\n""").format(procs)
+        cp = buildConfigParams(casProcs, 3)
+        cpDescName = casProcs["desc"]
+        procs = buildCASProc(casProcs["name"], cpDescName, cp)
+        DEP_LIST.append(cpDescName.split('.')[-1])
+        procs = procs.rstrip("\n")
+    CAS_PROCS = ""
+    if is_ae:
+        CAS_PROCS =\
+        """\t<casProcessors casPoolSize="3" processingUnitThreadCount="1">\n"""
+    CAS_PROCS += ("""{}\n""").format(procs)
+    if not is_ae:
+        CAS_PROCS += """\t</casProcessors>\n"""
 
     return CAS_PROCS
 
@@ -260,6 +280,30 @@ def modifyPipeline():
         getComponent()
 
 
+def writePom():
+    out_string = (
+        """<?xml version='1.0' encoding='UTF-8'?>\n""" +
+        """<project xmlns="http://maven.apache.org/POM/4.0.0" """ +
+        """xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" """ +
+        """xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 """ +
+        """http://maven.apache.org/xsd/maven-4.0.0.xsd">\n""" +
+        """\t<modelVersion>4.0.0</modelVersion>\n""" +
+        """\t<parent>\n""" +
+        """\t\t<groupId>de.julielab</groupId>\n""" +
+        """\t\t<artifactId>jcore-pipelines</artifactId>\n""" +
+        """\t\t<version>{}</version>\n""" +
+        """\t</parent>\n""" +
+        """\t<artifactId>{}</artifactId>\n""" +
+        """\t<name>{}</name>\n""" +
+        """\t<dependencies>\n""" +
+        """{}""" +
+        """\t</dependencies>\n""" +
+        """</project>"""
+        ).format(jcoreVersion, artifactId, name, dependencies)
+    with open("pom.xml", 'w') as out_file:
+        out_file.write(out_string)
+
+
 def buildCurrentPipeline():
     # COLLECTION READER
     cr = None
@@ -281,8 +325,22 @@ def buildCurrentPipeline():
     if len(ae_list) != 0:
         ae_string = buildCASProcs(ae_list)
 
+    # CAS CONSUMERS
+    cc = None
+    cc_key = C_MAP["cc"][A_MAP["cc"]]
+    cc_string = ""
+    if cc_key.lower() != "none":
+        cc = JCOORDS["cas consumer"][cc_key]
+        cc_string = buildCASProcs(cc, False)
+
+    if DEBUG:
+        print("[DEBUG] List of Dependencies:\n{}".format(DEP_LIST))
+
     # write out
-    print(cr_string+ae_string)
+    fiName = "{}-cpe.xml".format(PIPENAME)
+    out_string = HEAD + cr_string + ae_string + cc_string + END
+    with open(fiName, 'w') as out_file:
+        out_file.write(out_string)
 
 
 if __name__ == "__main__":

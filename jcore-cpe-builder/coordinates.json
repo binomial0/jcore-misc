@@ -300,7 +300,7 @@
             "mandatory": [
                 {"name": "outDirectory",
                 "type": "string",
-                "default": "data/BioNLPinData"}
+                "default": "data/BioNLPoutData"}
                 ],
             "optional": [
                 {"name": "bioEventServiceMode",
