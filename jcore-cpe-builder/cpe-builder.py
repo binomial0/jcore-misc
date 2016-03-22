@@ -5,11 +5,14 @@ import os
 import sys
 import subprocess
 import shutil
+import time
 
 DEBUG = False
 WS = '\t'
+TYPE_PRE = "de.julielab.jcore.types."
 PIPENAME = ""
 DEP_LIST = []
+DIR_LIST = []
 
 ### HEADER ###
 HEAD = (
@@ -80,6 +83,7 @@ def buildNameValue(nvName, nvValue, tab=1):
 
 
 def buildConfigParams(cp_dict, tab=1):
+    global DIR_LIST
     cp_string = ""
     cp_param_list = []
     for i in ["mandatory", "optional"]:
@@ -87,6 +91,8 @@ def buildConfigParams(cp_dict, tab=1):
     for param in cp_param_list:
         nv_pair = buildNameValue(param["name"],
             buildValue(param["type"], param["default"]), tab + 1)
+        if param.get("dir", False):
+            DIR_LIST.append(param["default"])
         cp_string += nv_pair
     cp_string = cp_string.rstrip('\n')
 
@@ -284,6 +290,10 @@ def modifyPipeline():
 
 
 def writePom():
+    print("write POM...")
+    sys.stdout.flush()
+    time.sleep(0.5)
+
     dependencies = ""
     for dep in DEP_LIST:
         dependencies += (
@@ -330,6 +340,10 @@ def copyInstallScript():
 
 
 def writeExecutionScript(cpeName):
+    print("create Scripts...")
+    sys.stdout.flush()
+    time.sleep(0.5)
+
     xScript = (
     """#!/bin/bash\n\n""" +
     """java_libs=target/dependency\n\n""" +
@@ -343,6 +357,15 @@ def writeExecutionScript(cpeName):
     subprocess.call(
         ["chmod", "+x", "runPipeline.sh"]
         )
+
+
+def createDirs():
+    print("create Directories...")
+    sys.stdout.flush()
+    time.sleep(0.5)
+    for iDir in DIR_LIST:
+        if not os.path.exists(iDir):
+            os.makedirs(iDir)
 
 
 def buildCurrentPipeline():
@@ -386,9 +409,12 @@ def buildCurrentPipeline():
     out_string = HEAD + cr_string + ae_string + cc_string + END
     with open(fiName, 'w') as out_file:
         out_file.write(out_string)
+
+    createDirs()
     writePom()
     copyInstallScript()
     writeExecutionScript(fiName)
+
     os.chdir("..")
 
 
@@ -398,5 +424,8 @@ if __name__ == "__main__":
             DEBUG = True
 
     modifyPipeline()
+
     print("\nbuild pipeline ...")
+    sys.stdout.flush()
+    time.sleep(0.5)
     buildCurrentPipeline()

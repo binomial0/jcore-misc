@@ -8,13 +8,21 @@
             "mandatory": [
                 {"name": "inputDirectory",
                 "type": "string",
-                "default": "data/ACEData"}
+                "default": "data/ACEData",
+                "dir": "true"}
                 ],
             "optional": [
                 {"name": "generateJcoreTypes",
                 "type": "boolean",
                 "default": "true"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": ["ArgumentMention","ace.EntityMention","ace.Timex2",
+                        "ace.EventMentionArgument","ace.RelationMention",
+                        "ace.RelationMentionArgument","ace.EventMention",
+                        "ace.Value","ace.ValueMention","ace.Timex2Mention"]
+                }
             },
 
         "muc7": {
@@ -23,13 +31,19 @@
             "mandatory": [
                 {"name": "InputDirectory",
                 "type": "string",
-                "default": "data/MUC7Data"}
+                "default": "data/MUC7Data",
+                "dir": "true"}
                 ],
             "optional": [
                 {"name": "generateJcoreTypes",
                 "type": "boolean",
                 "default": "true"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": ["muc7.Coref","muc7.ENAMEX","muc7.MUC7Header",
+                        "muc7.NUMEX","muc7.TIMEX"]
+                }
             },
 
         "bionlpst": {
@@ -38,7 +52,8 @@
             "mandatory": [
                 {"name": "inDirectory",
                 "type": "string",
-                "default": "data/BioNLPinData"}
+                "default": "data/BioNLPinData",
+                "dir": "true"}
                 ],
             "optional": [
                 {"name": "bioEventServiceMode",
@@ -50,7 +65,13 @@
                 {"name": "proteinFile",
                 "type": "string",
                 "default": "none"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": ["CorefExpression","AbstractText","Annotation","Entity",
+                        "ArgumentMention","CorefRelation","EntityMention","Gene",
+                        "EventMention","EventTrigger","Title","pubmed.Header"]
+                }
             },
 
         "iexml": {
@@ -59,13 +80,18 @@
             "mandatory": [
                 {"name": "inputFile",
                 "type": "string",
-                "default": "data/mantra-input.xml"}
+                "default": "data/mantra-input.xml",
+                "dir": "true"}
                 ],
             "optional": [
                 {"name": "maxRecordsCount",
                 "type": "integer",
                 "default": "1000"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "pubmed": {
@@ -74,12 +100,17 @@
             "mandatory": [
                 {"name": "InputDirectory",
                 "type": "string",
-                "default": "pubmed-xml"},
+                "default": "pubmed-xml",
+                "dir": "true"},
                 {"name": "MappingFile",
                 "type": "string",
                 "default": "/de/julielab/jcore/reader/xml/mapping/pubmedMappingFile.xml"}
                 ],
-            "optional": []
+            "optional": [],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "medline": {
@@ -88,12 +119,17 @@
             "mandatory": [
                 {"name": "InputDirectory",
                 "type": "string",
-                "default": "medline-xml"},
+                "default": "medline-xml",
+                "dir": "true"},
                 {"name": "MappingFile",
                 "type": "string",
                 "default": "/de/julielab/jcore/reader/xml/mapping/medlineMappingFile.xml"}
                 ],
-            "optional": []
+            "optional": [],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "file": {
@@ -102,7 +138,8 @@
             "mandatory": [
                 {"name": "InputDirectory",
                 "type": "string",
-                "default": "data/files/"}
+                "default": "data/files/",
+                "dir": "true"}
                 ],
             "optional": [
                 {"name": "UseFilenameAsDocId",
@@ -113,6 +150,8 @@
                 "default": "data/publicationDates"}
                 ],
             "capabilities": {
+                "in": [],
+                "out": []
                 }
             }
     },
@@ -122,48 +161,68 @@
             "desc": "de.julielab.jcore.ae.biosem.desc.jcore-biosem-ae-bionlp-st11",
             "name": "JCoRe BioSEM AE",
             "model": "BioNLP SharedTask 2011",
-            "mandatory": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
-                ],
-            "optional": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
-                ]
+            "mandatory": [],
+            "optional": [],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "jnet_pennbio": {
-            "desc": "de.julielab.jcore.",
-            "name": "JCoRe NAME",
+            "desc": "de.julielab.jcore.ae.jnet.desc.jcore-jnet-ae-biomedical-english",
+            "name": "JCoRe JNET AE",
             "model": "PennBio",
             "mandatory": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "ModelFilename",
+                "type": "string",
+                "default": "de/julielab/jcore/ae/jnet/model/jnet-pennbio.gz"},
+                {"name": "EntityTypes",
+                "type": "string",
+                "default": ["gene-protein=de.julielab.jcore.types.EntityMention",
+                            "gene-generic=de.julielab.jcore.types.EntityMention",
+                            "gene-rna=de.julielab.jcore.types.EntityMention"]}
                 ],
             "optional": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
-                ]
+                {"name": "ExpandAbbreviations",
+                "type": "boolean",
+                "default": "true"},
+                {"name": "ShowSegmentConfidence",
+                "type": "boolean",
+                "default": "false"},
+                {"name": "NegativeList",
+                "type": "string",
+                "default": ""},
+                {"name": "ConsistencyPreservation",
+                "type": "string",
+                "default": "string,full2acro,acro2full"},
+                {"name": "IgnoreNotIntroducedAbbreviations",
+                "type": "boolean",
+                "default": "true"}
+                ],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "jpos_framed": {
-            "desc": "de.julielab.jcore.",
-            "name": "JCoRe NAME",
+            "desc": "de.julielab.jcore.ae.jpos.desc.jcore-jpos-ae-medical-german",
+            "name": "JCoRe JPOS AE",
             "model": "FraMed",
             "mandatory": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "ModelFilename",
+                "type": "string",
+                "default": "de/julielab/jcore/ae/jpos/model/jpos-framed.gz"},
+                {"name": "tagset",
+                "type": "string",
+                "default": "de.julielab.jcore.types.STTSMedPOSTag"}
                 ],
-            "optional": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
-                ]
+            "optional": [],
+            "capabilities": {
+                "in": ["Token","Sentence"],
+                "out": ["Token"]
+                }
             },
 
         "jsbd": {
@@ -179,7 +238,11 @@
                 {"name": "NAME",
                 "type": "TYPE",
                 "default": "DEFAULT"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "jtbd": {
@@ -195,7 +258,11 @@
                 {"name": "NAME",
                 "type": "TYPE",
                 "default": "DEFAULT"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "mst_genia": {
@@ -211,7 +278,11 @@
                 {"name": "NAME",
                 "type": "TYPE",
                 "default": "DEFAULT"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "opennlp_chunk_genia": {
@@ -227,7 +298,11 @@
                 {"name": "NAME",
                 "type": "TYPE",
                 "default": "DEFAULT"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "opennlp_parser_genia": {
@@ -243,7 +318,11 @@
                 {"name": "NAME",
                 "type": "TYPE",
                 "default": "DEFAULT"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "opennlp_pos_pennbio:": {
@@ -259,7 +338,11 @@
                 {"name": "NAME",
                 "type": "TYPE",
                 "default": "DEFAULT"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "opennlp_sentence": {
@@ -275,7 +358,11 @@
                 {"name": "NAME",
                 "type": "TYPE",
                 "default": "DEFAULT"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             },
 
         "opennlp_token": {
@@ -291,7 +378,11 @@
                 {"name": "NAME",
                 "type": "TYPE",
                 "default": "DEFAULT"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             }
     },
 
@@ -302,7 +393,8 @@
             "mandatory": [
                 {"name": "outDirectory",
                 "type": "string",
-                "default": "data/BioNLPoutData"}
+                "default": "data/BioNLPoutData",
+                "dir": "true"}
                 ],
             "optional": [
                 {"name": "bioEventServiceMode",
@@ -314,7 +406,11 @@
                 {"name": "proteinFile",
                 "type": "string",
                 "default": "none"}
-                ]
+                ],
+            "capabilities": {
+                "in": [],
+                "out": []
+                }
             }
     }
 }
