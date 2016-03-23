@@ -9,7 +9,7 @@
                 {"name": "inputDirectory",
                 "type": "string",
                 "default": "data/ACEData",
-                "dir": "true"}
+                "dir": "folder"}
                 ],
             "optional": [
                 {"name": "generateJcoreTypes",
@@ -32,7 +32,7 @@
                 {"name": "InputDirectory",
                 "type": "string",
                 "default": "data/MUC7Data",
-                "dir": "true"}
+                "dir": "folder"}
                 ],
             "optional": [
                 {"name": "generateJcoreTypes",
@@ -53,7 +53,7 @@
                 {"name": "inDirectory",
                 "type": "string",
                 "default": "data/BioNLPinData",
-                "dir": "true"}
+                "dir": "folder"}
                 ],
             "optional": [
                 {"name": "bioEventServiceMode",
@@ -81,7 +81,7 @@
                 {"name": "inputFile",
                 "type": "string",
                 "default": "data/mantra-input.xml",
-                "dir": "true"}
+                "dir": "file"}
                 ],
             "optional": [
                 {"name": "maxRecordsCount",
@@ -90,7 +90,7 @@
                 ],
             "capabilities": {
                 "in": [],
-                "out": []
+                "out": ["mantra.Unit","mantra.Entity","mantra.DocumentInformation"]
                 }
             },
 
@@ -101,7 +101,7 @@
                 {"name": "InputDirectory",
                 "type": "string",
                 "default": "pubmed-xml",
-                "dir": "true"},
+                "dir": "folder"},
                 {"name": "MappingFile",
                 "type": "string",
                 "default": "/de/julielab/jcore/reader/xml/mapping/pubmedMappingFile.xml"}
@@ -109,7 +109,9 @@
             "optional": [],
             "capabilities": {
                 "in": [],
-                "out": []
+                "out": ["AbstractText","Title","pubmed.Header","AuthorInfo",
+                        "Journal","Date","pubmed.ManualDescriptor","Keyword",
+                        "Chemical","DBInfo","MeshHeading"]
                 }
             },
 
@@ -120,7 +122,7 @@
                 {"name": "InputDirectory",
                 "type": "string",
                 "default": "medline-xml",
-                "dir": "true"},
+                "dir": "folder"},
                 {"name": "MappingFile",
                 "type": "string",
                 "default": "/de/julielab/jcore/reader/xml/mapping/medlineMappingFile.xml"}
@@ -128,7 +130,9 @@
             "optional": [],
             "capabilities": {
                 "in": [],
-                "out": []
+                "out": ["pubmed.OtherID","AbstractText","Title","pubmed.Header",
+                        "Journal","Date","pubmed.ManualDescriptor","Keyword",
+                        "AuthorInfo","Chemical","DBInfo","MeshHeading"]
                 }
             },
 
@@ -139,7 +143,7 @@
                 {"name": "InputDirectory",
                 "type": "string",
                 "default": "data/files/",
-                "dir": "true"}
+                "dir": "folder"}
                 ],
             "optional": [
                 {"name": "UseFilenameAsDocId",
@@ -151,7 +155,7 @@
                 ],
             "capabilities": {
                 "in": [],
-                "out": []
+                "out": ["Date","pubmed.Header"]
                 }
             }
     },
@@ -164,8 +168,8 @@
             "mandatory": [],
             "optional": [],
             "capabilities": {
-                "in": [],
-                "out": []
+                "in": ["Gene"],
+                "out": ["EventTrigger","EventMention","ArgumentMention"]
                 }
             },
 
@@ -201,8 +205,8 @@
                 "default": "true"}
                 ],
             "capabilities": {
-                "in": [],
-                "out": []
+                "in": ["Token","Sentence"],
+                "out": ["EntityMention"]
                 }
             },
 
@@ -226,42 +230,46 @@
             },
 
         "jsbd": {
-            "desc": "de.julielab.jcore.",
-            "name": "JCoRe NAME",
+            "desc": "de.julielab.jcore.ae.jsbd.desc.jcore-jsbd-ae-biomedical-english",
+            "name": "JCoRe JSBD",
             "model": "n.a.",
             "mandatory": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "ModelFileName",
+                "type": "string",
+                "default": "de/julielab/jcore/ae/jsbd/model/jsbd-2.0-biomed.gz"}
                 ],
             "optional": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "Postprocessing",
+                "type": "boolean",
+                "default": "true"},
+            "optional": [
+                {"name": "ProcessingScope",
+                "type": "string",
+                "default": ""}
                 ],
             "capabilities": {
                 "in": [],
-                "out": []
+                "out": ["Sentence"]
                 }
             },
 
         "jtbd": {
-            "desc": "de.julielab.jcore.",
-            "name": "JCoRe NAME",
+            "desc": "de.julielab.jcore.ae.jtbd.desc.jcore-jtbd-ae-biomedical-english",
+            "name": "JCoRe JTBD",
             "model": "n.a.",
             "mandatory": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "ModelFilename",
+                "type": "string",
+                "default": "de/julielab/jcore/ae/jtbd/model/jtbd-2.0-biomed.gz"}
                 ],
             "optional": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "UseDocText",
+                "type": "boolean",
+                "default": "true"}
                 ],
             "capabilities": {
-                "in": [],
-                "out": []
+                "in": ["Sentence"],
+                "out": ["Token"]
                 }
             },
 

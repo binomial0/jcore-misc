@@ -13,6 +13,7 @@ TYPE_PRE = "de.julielab.jcore.types."
 PIPENAME = ""
 DEP_LIST = []
 DIR_LIST = []
+JSON_FILE = "coordinates.json"
 
 ### HEADER ###
 HEAD = (
@@ -35,7 +36,7 @@ END = (
 
 ### PROJECTS COORDINATES ###
 JCOORDS = None
-with open('coordinates.json') as jfile:
+with open(JSON_FILE) as jfile:
     JCOORDS = json.load(jfile)
  # add short names (derived from key names) to components
 for component in list(JCOORDS.keys()):
@@ -92,7 +93,11 @@ def buildConfigParams(cp_dict, tab=1):
         nv_pair = buildNameValue(param["name"],
             buildValue(param["type"], param["default"]), tab + 1)
         if param.get("dir", False):
-            DIR_LIST.append(param["default"])
+            if param["dir"] == 'file':
+                DIR_LIST.append(
+                    os.path.dirname(param["default"]))
+            elif param["dir"] == 'folder':
+                DIR_LIST.append(param["default"])
         cp_string += nv_pair
     cp_string = cp_string.rstrip('\n')
 
