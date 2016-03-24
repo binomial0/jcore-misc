@@ -386,62 +386,53 @@
             },
 
         "opennlp_pos_pennbio:": {
-            "desc": "de.julielab.jcore.",
-            "name": "JCoRe NAME",
+            "desc": "de.julielab.jcore.ae.opennlp.postag.desc.jcore-opennlp-postag-ae-biomedical-english",
+            "name": "JCoRe OpenNLP POS Tagger",
             "model": "PennBioIE",
             "mandatory": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "modelFile",
+                "type": "string",
+                "default": "de/julielab/jcore/ae/opennlp/postag/model/opennlp-postag-pennbioie.bin.gz"},
+                {"name": "tagset",
+                "type": "string",
+                "default": "de.julielab.jcore.types.PennBioIEPOSTag"}
                 ],
-            "optional": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
-                ],
+            "optional": [],
             "capabilities": {
-                "in": [],
-                "out": []
+                "in": ["Token","Sentence"],
+                "out": ["POSTag"]
                 }
             },
 
         "opennlp_sentence": {
-            "desc": "de.julielab.jcore.",
-            "name": "JCoRe NAME",
+            "desc": "de.julielab.jcore.ae.opennlp.sentence.desc.jcore-opennlp-sentence-ae-biomedical-english",
+            "name": "JCoRe OpenNLP Sentence Splitter",
             "model": "n.a.",
             "mandatory": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "modelFile",
+                "type": "string",
+                "default": "de/julielab/jcore/ae/opennlp/sentence/model/opennlp-sentence-model-biomed-en.bin"}
                 ],
-            "optional": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
-                ],
+            "optional": [],
             "capabilities": {
                 "in": [],
-                "out": []
+                "out": ["Sentence"]
                 }
             },
 
         "opennlp_token": {
-            "desc": "de.julielab.jcore.",
-            "name": "JCoRe NAME",
+            "desc": "de.julielab.jcore.ae.opennlp.token.desc.jcore-opennlp-token-ae-biomedical-english",
+            "name": "JCoRe OpenNLP Token Annotator",
             "model": "n.a.",
             "mandatory": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "ModelFile",
+                "type": "string",
+                "default": "/de/julielab/jcore/ae/opennlp/token/model/biomed-tok-opennlp160.bin.gz"}
                 ],
-            "optional": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
-                ],
+            "optional": [],
             "capabilities": {
-                "in": [],
-                "out": []
+                "in": ["Sentence"],
+                "out": ["Token"]
                 }
             }
     },
