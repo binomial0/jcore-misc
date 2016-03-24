@@ -163,7 +163,7 @@
     "analysis engine": {
         "biosem_11": {
             "desc": "de.julielab.jcore.ae.biosem.desc.jcore-biosem-ae-bionlp-st11",
-            "name": "JCoRe BioSEM AE",
+            "name": "JCoRe Relation Extractor (BioSEM)",
             "model": "BioNLP SharedTask 2011",
             "mandatory": [],
             "optional": [],
@@ -175,7 +175,7 @@
 
         "jnet_pennbio": {
             "desc": "de.julielab.jcore.ae.jnet.desc.jcore-jnet-ae-biomedical-english",
-            "name": "JCoRe JNET AE",
+            "name": "JCoRe Named Entity Tagger (JNET)",
             "model": "PennBio",
             "mandatory": [
                 {"name": "ModelFilename",
@@ -212,7 +212,7 @@
 
         "jpos_framed": {
             "desc": "de.julielab.jcore.ae.jpos.desc.jcore-jpos-ae-medical-german",
-            "name": "JCoRe JPOS AE",
+            "name": "JCoRe Part-Of-Speech Tagger (JPOS)",
             "model": "FraMed",
             "mandatory": [
                 {"name": "ModelFilename",
@@ -231,7 +231,7 @@
 
         "jsbd": {
             "desc": "de.julielab.jcore.ae.jsbd.desc.jcore-jsbd-ae-biomedical-english",
-            "name": "JCoRe JSBD",
+            "name": "JCoRe Sentence Splitter (JSBD)",
             "model": "n.a.",
             "mandatory": [
                 {"name": "ModelFileName",
@@ -242,7 +242,6 @@
                 {"name": "Postprocessing",
                 "type": "boolean",
                 "default": "true"},
-            "optional": [
                 {"name": "ProcessingScope",
                 "type": "string",
                 "default": ""}
@@ -255,7 +254,7 @@
 
         "jtbd": {
             "desc": "de.julielab.jcore.ae.jtbd.desc.jcore-jtbd-ae-biomedical-english",
-            "name": "JCoRe JTBD",
+            "name": "JCoRe Token Annotator (JTBD)",
             "model": "n.a.",
             "mandatory": [
                 {"name": "ModelFilename",
@@ -275,7 +274,7 @@
 
         "mst_genia": {
             "desc": "de.julielab.jcore.ae.mstparser.desc.jcore-mstparser-ae-biomedical-english",
-            "name": "JCoRe MST Parser",
+            "name": "JCoRe Dependency Parser (MST Parser)",
             "model": "GENIA 2008",
             "mandatory": [],
             "optional": [
@@ -376,7 +375,7 @@
                             "NML;NML",
                             "INTJ;INTJ",
                             "NX;NX",
-                            "X;X",
+                            "X;X"
                             ]}
                 ],
             "capabilities": {
@@ -487,7 +486,8 @@
             "capabilities": {
                 "in": [],
                 "out": []
-                },
+                }
+            },
 
         "iexml": {
             "desc": "de.julielab.jcore.consumer.iexml.desc.jcore-iexml-consumer",
@@ -511,7 +511,8 @@
             "capabilities": {
                 "in": [],
                 "out": []
-                },
+                }
+            },
 
         "xmi": {
             "desc": "de.julielab.jcore.consumer.xmi.desc.jcore-xmi-writer",
