@@ -324,7 +324,7 @@
             "name": "JCoRe OpenNLP Parser",
             "model": "GENIA 2009",
             "mandatory": [
-                {"name": "modelFile",
+                {"name": "modelDir",
                 "type": "string",
                 "default": "src/main/resources/de/julielab/jcore/ae/opennlp/parser/model/opennlp-parser-genia2009.bin"}
                 ],
@@ -432,6 +432,85 @@
             "capabilities": {
                 "in": ["Sentence"],
                 "out": ["Token"]
+                }
+            },
+
+        "stanford_lemma": {
+            "desc": "de.julielab.jcore.ae.stanford.lemma.desc.jcore-stanford-lemmatizer",
+            "name": "JCoRe Stanford Lemmatizer",
+            "model": "n.a.",
+            "mandatory": [],
+            "optional": [],
+            "capabilities": {
+                "in": ["Token","POSTag"],
+                "out": ["Lemma"]
+                }
+            },
+
+        "acronym": {
+            "desc": "de.julielab.jcore.ae.acronymtagger.desc.jcore-acronym-ae",
+            "name": "JCoRe Acronym Resolver",
+            "model": "n.a.",
+            "mandatory": [
+                {"name": "ConsistencyAnno",
+                "type": "boolean",
+                "default": "true"},
+                {"name": "MaxLength",
+                "type": "integer",
+                "default": "5"}
+                ],
+            "optional": [],
+            "capabilities": {
+                "in": ["Sentence"],
+                "out": ["Abbreviation"]
+                }
+            },
+
+        "coordination_base_conjunct": {
+            "desc": "de.julielab.jcore.ae.coordbaseline.desc.jcore-coordination-baseline-ae-conjunct",
+            "name": "JCoRe Coordination Resolver (Baseline)",
+            "model": "Conjunct",
+            "mandatory": [],
+            "optional": [],
+            "capabilities": {
+                "in": ["Sentence","Token"],
+                "out": []
+                }
+            },
+
+        "coordination_base_coordination": {
+            "desc": "de.julielab.jcore.ae.coordbaseline.desc.jcore-coordination-baseline-ae-coordination",
+            "name": "JCoRe Coordination Resolver (Baseline)",
+            "model": "Coordination",
+            "mandatory": [],
+            "optional": [],
+            "capabilities": {
+                "in": ["Sentence","Token"],
+                "out": []
+                }
+            },
+
+        "coordination_base_eee": {
+            "desc": "de.julielab.jcore.ae.coordbaseline.desc.jcore-coordination-baseline-ae-eee",
+            "name": "JCoRe Coordination Resolver (Baseline)",
+            "model": "EEE",
+            "mandatory": [],
+            "optional": [],
+            "capabilities": {
+                "in": ["Sentence","Token"],
+                "out": []
+                }
+            },
+
+        "coordination_base_ellipsis": {
+            "desc": "de.julielab.jcore.ae.coordbaseline.desc.jcore-coordination-baseline-ae-ellipsis",
+            "name": "JCoRe Coordination Resolver (Baseline)",
+            "model": "Ellipsis",
+            "mandatory": [],
+            "optional": [],
+            "capabilities": {
+                "in": ["Sentence","Token"],
+                "out": []
                 }
             }
     },

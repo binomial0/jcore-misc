@@ -214,7 +214,14 @@ def getCompName(component, index):
     name = "None"
     jShort = C_MAP[component][index]
     if jShort != "None":
-        name = JCOORDS[(c_dict[component]).lower()][jShort]["name"]
+        if component != "ae":
+            name = "{}".format(
+                JCOORDS[(c_dict[component]).lower()][jShort]["name"])
+        else:
+            name = "{}, {}".format(
+                JCOORDS[(c_dict[component]).lower()][jShort]["name"],
+                JCOORDS[(c_dict[component]).lower()][jShort]["model"]
+                )
 
     return name
 
@@ -230,7 +237,11 @@ def getComponent(component="ae"):
     count = 0
     for i in sorted(list(comps.keys())):
         C_MAP[component][str(count)] = i
-        comp_string += "\t[{:>2}] {}\n".format(count, comps[i]["name"])
+        if component == "ae":
+            comp_string += "\t[{:>2}] {}, {}\n".format(count, comps[i]["name"],
+                comps[i]["model"])
+        else:
+            comp_string += "\t[{:>2}] {}\n".format(count, comps[i]["name"])
         count += 1
 
     cr = None
@@ -271,7 +282,7 @@ def displayPipeline():
            """Analysis Engine(s):\n\t{}""" +
            """Collection Consumer:\n\t{}"""
            ).format(getCompName("cr", A_MAP["cr"]) + "\n",
-                ", ".join([getCompName("ae", x) for x in A_MAP["ae"]]) + "\n",
+                "; ".join([getCompName("ae", x) for x in A_MAP["ae"]]) + "\n",
                 getCompName("cc", A_MAP["cc"]) + "\n")
            )
 
