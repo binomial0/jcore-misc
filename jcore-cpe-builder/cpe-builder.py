@@ -90,6 +90,7 @@ def buildConfigParams(cp_dict, tab=1):
     for i in ["mandatory", "optional"]:
         cp_param_list.extend(cp_dict[i])
     for param in cp_param_list:
+        # if default is "", do what?
         if not isinstance(param["default"], list):
             nv_pair = buildNameValue(param["name"],
                 buildValue(param["type"], param["default"]), tab + 1)
