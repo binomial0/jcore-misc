@@ -274,42 +274,49 @@
             },
 
         "mst_genia": {
-            "desc": "de.julielab.jcore.",
-            "name": "JCoRe NAME",
+            "desc": "de.julielab.jcore.ae.mstparser.desc.jcore-mstparser-ae-biomedical-english",
+            "name": "JCoRe MST Parser",
             "model": "GENIA 2008",
-            "mandatory": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
-                ],
+            "mandatory": [],
             "optional": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "NumMaxTokens",
+                "type": "integer",
+                "default": ""}
                 ],
             "capabilities": {
-                "in": [],
-                "out": []
+                "in": ["Sentence"],
+                "out": ["Token"]
                 }
             },
 
         "opennlp_chunk_genia": {
-            "desc": "de.julielab.jcore.",
-            "name": "JCoRe NAME",
+            "desc": "de.julielab.jcore.ae.opennlp.chunk.desc.jcore-opennlp-chunk-ae-biomedical-english",
+            "name": "JCoRe OpenNLP Chunker",
             "model": "GENIA",
             "mandatory": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "modelFile",
+                "type": "string",
+                "default": "de/julielab/jcore/ae/opennlp/chunk/model/opennlp-chunk-model-biomed-english-genia.bin"}
                 ],
             "optional": [
-                {"name": "NAME",
-                "type": "TYPE",
-                "default": "DEFAULT"}
+                {"name": "posTagSetPref",
+                "type": "string",
+                "default": "de.julielab.jcore.types.GeniaPOSTag"},
+                {"name": "mappings",
+                "type": "string",
+                "default": ["NP;de.julielab.jcore.types.ChunkNP",
+                            "PP;de.julielab.jcore.types.ChunkPP",
+                            "VP;de.julielab.jcore.types.ChunkVP",
+                            "ADJP;de.julielab.jcore.types.ChunkADJP",
+                            "CONJP;de.julielab.jcore.types.ChunkCONJP",
+                            "LST;de.julielab.jcore.types.ChunkLST",
+                            "SBAR;de.julielab.jcore.types.ChunkSBAR",
+                            "PRT;de.julielab.jcore.types.ChunkPRT",
+                            "ADVP;de.julielab.jcore.types.ChunkADVP"]}
                 ],
             "capabilities": {
-                "in": [],
-                "out": []
+                "in": ["Token","Sentence","POSTag"],
+                "out": ["Chunk"]
                 }
             },
 
