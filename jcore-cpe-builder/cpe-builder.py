@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+## ToDo: -remove empty parameters from cpe when building
+##       -convert parameter list to array
+##       -coordination baseline => different descs
+
 import json
 import os
 import sys
@@ -91,7 +95,9 @@ def buildConfigParams(cp_dict, tab=1):
         cp_param_list.extend(cp_dict[i])
     for param in cp_param_list:
         # if default is "", do what?
-        if not isinstance(param["default"], list):
+        # only write nv_pair if it''s not empty
+        if (not isinstance(param["default"], list) and
+            param["default"] != ""):
             nv_pair = buildNameValue(param["name"],
                 buildValue(param["type"], param["default"]), tab + 1)
         else:

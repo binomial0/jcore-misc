@@ -137,7 +137,7 @@
             },
 
         "file": {
-            "desc": "de.julielab.jcore.reader.file.desc.jcore-file.reader",
+            "desc": "de.julielab.jcore.reader.file.desc.jcore-file-reader",
             "name": "JCoRe File Reader",
             "mandatory": [
                 {"name": "InputDirectory",
@@ -326,7 +326,7 @@
             "mandatory": [
                 {"name": "modelDir",
                 "type": "string",
-                "default": "src/main/resources/de/julielab/jcore/ae/opennlp/parser/model/opennlp-parser-genia2009.bin"}
+                "default": "de/julielab/jcore/ae/opennlp/parser/model/opennlp-parser-genia2009.bin"}
                 ],
             "optional": [
                 {"name": "useTagdict",
