@@ -468,6 +468,7 @@
 
         "coordination_base_conjunct": {
             "desc": "de.julielab.jcore.ae.coordbaseline.desc.jcore-coordination-baseline-ae-conjunct",
+            "mult_desc": "true",
             "name": "JCoRe Coordination Resolver (Baseline)",
             "model": "Conjunct",
             "mandatory": [],
@@ -480,6 +481,7 @@
 
         "coordination_base_coordination": {
             "desc": "de.julielab.jcore.ae.coordbaseline.desc.jcore-coordination-baseline-ae-coordination",
+            "mult_desc": "true",
             "name": "JCoRe Coordination Resolver (Baseline)",
             "model": "Coordination",
             "mandatory": [],
@@ -492,6 +494,7 @@
 
         "coordination_base_eee": {
             "desc": "de.julielab.jcore.ae.coordbaseline.desc.jcore-coordination-baseline-ae-eee",
+            "mult_desc": "true",
             "name": "JCoRe Coordination Resolver (Baseline)",
             "model": "EEE",
             "mandatory": [],
@@ -504,6 +507,7 @@
 
         "coordination_base_ellipsis": {
             "desc": "de.julielab.jcore.ae.coordbaseline.desc.jcore-coordination-baseline-ae-ellipsis",
+            "mult_desc": "true",
             "name": "JCoRe Coordination Resolver (Baseline)",
             "model": "Ellipsis",
             "mandatory": [],

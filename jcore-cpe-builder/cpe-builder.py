@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-## ToDo: -remove empty parameters from cpe when building
-##       -convert parameter list to array
-##       -coordination baseline => different descs
+## ToDo: -convert parameter list to array
+##       -heuristic handling of capabilities
 
 import json
 import os
@@ -94,22 +93,20 @@ def buildConfigParams(cp_dict, tab=1):
     for i in ["mandatory", "optional"]:
         cp_param_list.extend(cp_dict[i])
     for param in cp_param_list:
-        # if default is "", do what?
-        # only write nv_pair if it''s not empty
-        if (not isinstance(param["default"], list) and
-            param["default"] != ""):
-            nv_pair = buildNameValue(param["name"],
-                buildValue(param["type"], param["default"]), tab + 1)
-        else:
-            # value is an <array> ... </array>
-            pass
-        if param.get("dir", False):
-            if param["dir"] == 'file':
-                DIR_LIST.append(
-                    os.path.dirname(param["default"]))
-            elif param["dir"] == 'folder':
-                DIR_LIST.append(param["default"])
-        cp_string += nv_pair
+        if len(param["default"]) != 0:
+            if not isinstance(param["default"], list):
+                nv_pair = buildNameValue(param["name"],
+                    buildValue(param["type"], param["default"]), tab + 1)
+            else:
+                # value is an <array> ... </array>
+                pass
+            if param.get("dir", False):
+                if param["dir"] == 'file':
+                    DIR_LIST.append(
+                        os.path.dirname(param["default"]))
+                elif param["dir"] == 'folder':
+                    DIR_LIST.append(param["default"])
+            cp_string += nv_pair
     cp_string = cp_string.rstrip('\n')
 
     CONFIG_PARAMS = (
@@ -122,11 +119,10 @@ def buildConfigParams(cp_dict, tab=1):
 
 
 def buildCollectionReader(cr_dict):
-    global DEP_LIST
     # e.g. cDescName=de.julielab.jcore.reader.file.desc.jcore-file-reader
     crDescName = cr_dict["desc"]
-    DEP_LIST.append(crDescName.split('.')[-1])
     crConfigParams = buildConfigParams(cr_dict, 3)
+    add2DepList(cr_dict)
 
     CR = (
     """\t<collectionReader>\n""" +
@@ -143,7 +139,6 @@ def buildCollectionReader(cr_dict):
 
 def buildCASProcs(casProcs, is_ae=True):
     global PIPENAME
-    global DEP_LIST
     procs = ""
     if isinstance(casProcs, list):
         PIPENAME = casProcs[-1]["short"]
@@ -152,13 +147,13 @@ def buildCASProcs(casProcs, is_ae=True):
             name = ", ".join([proc["name"], proc["model"]])
             cp = buildConfigParams(proc, 3)
             procs += buildCASProc(name, cpDescName, cp)
-            DEP_LIST.append(cpDescName.split('.')[-1])
+            add2DepList(proc)
         procs = procs.rstrip("\n")
     else:
         cp = buildConfigParams(casProcs, 3)
         cpDescName = casProcs["desc"]
         procs = buildCASProc(casProcs["name"], cpDescName, cp)
-        DEP_LIST.append(cpDescName.split('.')[-1])
+        add2DepList(casProcs)
         procs = procs.rstrip("\n")
     CAS_PROCS = ""
     if is_ae:
@@ -189,6 +184,21 @@ def buildCASProc(casName, casDescName, casCP):
     """\t\t</casProcessor>\n""").format(casName, casDescName, casCP)
 
     return CAS_PROC
+
+
+def add2DepList(cDict):
+    global DEP_LIST
+    # if a component has multiple descriptors, the json file has a flag
+    # "mult_desc: true"; to be on par with the naming convention, the
+    # different descriptors all have the same prefix (i.e. name of the mvn
+    # artifact) and a "-" delimited suffix
+    cDescName = cDict["desc"]
+    if (cDict.get("mult_desc", "false")).lower() == "true":
+        dep = cDescName.split('.')[-1]
+        dep = "-".join(dep.split("-")[:-1])
+    else:
+        dep = cDescName.split('.')[-1]
+    DEP_LIST.append(dep)
 
 
 def quitSystem():
