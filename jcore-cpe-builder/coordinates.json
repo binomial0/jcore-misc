@@ -553,7 +553,7 @@
                 "dir": "folder"},
                 {"name": "labelNameMethods",
                 "type": "string",
-                "default": ["Gene"]},
+                "default": ["EntityMention"]},
                 {"name": "mode",
                 "type": "string",
                 "default": "iob"}
@@ -561,10 +561,10 @@
             "optional": [
                 {"name": "iobLabelNames",
                 "type": "string",
-                "default": ["de.julielab.jcore.types.Gene=Gene"]},
+                "default": ["de.julielab.jcore.types.EntityMention=Entity"]},
                 {"name": "labels",
                 "type": "string",
-                "default": [""]}
+                "default": ["Gene", "EventTrigger"]}
                 ],
             "capabilities": {
                 "in": [],
