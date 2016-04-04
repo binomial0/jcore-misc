@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-## ToDo: -convert parameter list to array
-##       -heuristic handling of capabilities
+## ToDo: -heuristic handling of capabilities
 
 import json
 import os
@@ -70,6 +69,21 @@ def buildValue(vType, vValue):
     return VALUE
 
 
+def buildArrayValue(vType, vValues, tab=1):
+    vValue = "\n".join(
+        ["\t{}{}".format((tab + 1) * WS,
+                       buildValue(vType, v)) for v in vValues])
+    vValue = vValue + "\n"
+    ARRAYVALUE = (
+    """<array>\n""" +
+    """{}""" +
+    """{}</array>"""
+    ).format(vValue,
+             (tab + 1) * WS)
+
+    return ARRAYVALUE
+
+
 def buildNameValue(nvName, nvValue, tab=1):
     # e.g. NAME = InputDirectory
     NAME_VALUE_PAIR = (
@@ -99,7 +113,10 @@ def buildConfigParams(cp_dict, tab=1):
                     buildValue(param["type"], param["default"]), tab + 1)
             else:
                 # value is an <array> ... </array>
-                pass
+                nv_pair = buildNameValue(
+                    param["name"],
+                    buildArrayValue(param["type"], param["default"], tab + 2),
+                    tab + 1)
             if param.get("dir", False):
                 if param["dir"] == 'file':
                     DIR_LIST.append(

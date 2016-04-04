@@ -474,8 +474,8 @@
             "mandatory": [],
             "optional": [],
             "capabilities": {
-                "in": ["Sentence","Token"],
-                "out": []
+                "in": ["Sentence","Token","POSTag","EEE"],
+                "out": ["CoordinationElement"]
                 }
             },
 
@@ -487,8 +487,8 @@
             "mandatory": [],
             "optional": [],
             "capabilities": {
-                "in": ["Sentence","Token"],
-                "out": []
+                "in": ["Sentence","Token","POSTag","Entity"],
+                "out": ["EEE","Coordination","CoordinationElement"]
                 }
             },
 
@@ -500,8 +500,8 @@
             "mandatory": [],
             "optional": [],
             "capabilities": {
-                "in": ["Sentence","Token"],
-                "out": []
+                "in": ["Sentence","Token","Entity"],
+                "out": ["EEE"]
                 }
             },
 
@@ -513,8 +513,8 @@
             "mandatory": [],
             "optional": [],
             "capabilities": {
-                "in": ["Sentence","Token"],
-                "out": []
+                "in": ["Sentence","Token","EEE"],
+                "out": ["Coordination"]
                 }
             }
     },
