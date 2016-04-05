@@ -15,6 +15,7 @@ TYPE_PRE = "de.julielab.jcore.types."
 PIPENAME = ""
 DEP_LIST = []
 DIR_LIST = []
+CAP_PROVIDED = []
 JSON_FILE = "coordinates.json"
 
 ### HEADER ###
@@ -58,6 +59,11 @@ A_MAP = {
     "cc": "None"
     }
 
+c_dict = {
+    "cr": "Collection Reader",
+    "ae": "Analysis Engine",
+    "cc": "CAS Consumer"
+    }
 
 ### BUILDING FUNCTIONS ###
 def buildValue(vType, vValue):
@@ -239,11 +245,6 @@ def removeLastComponent(component):
 
 
 def getCompName(component, index):
-    c_dict = {
-        "cr": "Collection Reader",
-        "ae": "Analysis Engine",
-        "cc": "CAS Consumer"
-        }
     name = "None"
     jShort = C_MAP[component][index]
     if jShort != "None":
@@ -259,12 +260,36 @@ def getCompName(component, index):
     return name
 
 
+def checkForCapabilities(comp, coKey):
+    global CAP_PROVIDED
+
+    fullCat = (c_dict[comp]).lower()
+    cKey = C_MAP[comp][coKey]
+    needCap = JCOORDS[fullCat][cKey]["capabilities"]["in"]
+
+    if DEBUG:
+        print("Provided capabilities: {}\n".format(CAP_PROVIDED))
+        print("Component needs cap: {} - {}:\n\t{}".format(
+            fullCat, cKey, needCap))
+
+    matchCap = False
+
+    if len(needCap) <= 0:
+        matchCap = True
+    else:
+        for inCap in needCap:
+            if inCap not in CAP_PROVIDED:
+                matchCap = False
+            else:
+                matchCap = True
+
+    if matchCap:
+        CAP_PROVIDED.extend(JCOORDS[fullCat][cKey]["capabilities"]["out"])
+
+    return matchCap
+
+
 def getComponent(component="ae"):
-    c_dict = {
-        "cr": "Collection Reader",
-        "ae": "Analysis Engine",
-        "cc": "CAS Consumer"
-        }
     comp_string = ""
     comps = JCOORDS[(c_dict[component]).lower()]
     count = 0
@@ -292,11 +317,14 @@ def getComponent(component="ae"):
         )
         cr = cr.lower()
         if cr in [str(x) for x in range(len(C_MAP[component]) - 1)]:
+            checkForCapabilities(component, cr)
             if component == "ae":
+                # add ae to stack
                 if "None" in A_MAP[component]:
                     A_MAP[component].remove("None")
                 A_MAP[component].append(cr)
             else:
+                # replace previous cr/cc
                 A_MAP[component] = cr
 
         if cr == "r":
