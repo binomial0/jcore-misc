@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-## ToDo: -heuristic handling of capabilities
-
 import json
 import os
 import sys
@@ -238,10 +236,13 @@ def clearScreen():
 def removeLastComponent(component):
     if component == "ae":
         tmp = A_MAP[component].pop()
+        prevComp = tmp
         if (tmp is "None") or (len(A_MAP[component]) == 0):
             A_MAP[component].append("None")
     else:
+        prevComp = A_MAP[component]
         A_MAP[component] = "None"
+    checkForCapabilities(component, prevComp, remove=True)
 
 
 def getCompName(component, index):
@@ -260,33 +261,37 @@ def getCompName(component, index):
     return name
 
 
-def checkForCapabilities(comp, coKey):
+def checkForCapabilities(comp, coKey, remove=False):
     global CAP_PROVIDED
 
     fullCat = (c_dict[comp]).lower()
     cKey = C_MAP[comp][coKey]
     needCap = JCOORDS[fullCat][cKey]["capabilities"]["in"]
 
-    if DEBUG:
-        print("Provided capabilities: {}\n".format(CAP_PROVIDED))
-        print("Component needs cap: {} - {}:\n\t{}".format(
-            fullCat, cKey, needCap))
-
     matchCap = False
+    if not remove:
+        if DEBUG:
+            print("Provided capabilities: {}\n".format(CAP_PROVIDED))
+            print("Component needs cap: {} - {}:\n\t{}".format(
+                fullCat, cKey, needCap))
 
-    if len(needCap) <= 0:
-        matchCap = True
+        if len(needCap) <= 0:
+            matchCap = True
+        else:
+            for inCap in needCap:
+                if inCap not in CAP_PROVIDED:
+                    matchCap = False
+                else:
+                    matchCap = True
+
+        if matchCap:
+            CAP_PROVIDED.extend(JCOORDS[fullCat][cKey]["capabilities"]["out"])
     else:
-        for inCap in needCap:
-            if inCap not in CAP_PROVIDED:
-                matchCap = False
-            else:
-                matchCap = True
+        remCap = JCOORDS[fullCat][cKey]["capabilities"]["out"]
+        for oCap in remCap:
+            CAP_PROVIDED.remove(oCap)
 
-    if matchCap:
-        CAP_PROVIDED.extend(JCOORDS[fullCat][cKey]["capabilities"]["out"])
-
-    return matchCap
+    return matchCap, needCap
 
 
 def getComponent(component="ae"):
@@ -307,25 +312,35 @@ def getComponent(component="ae"):
     if component == "ae":
         choice = """Add an {} from the following list:"""
 
+    displ = ""
     while cr is None or cr not in ["q", "p"]:
         displayPipeline()
         cr = input(
         (choice +
          """\n{}\nChoice (p for 'back to previous'; q for 'quit'; """ +
-         """r for 'remove last'): """)
-        .format(c_dict[component], comp_string)
+         """r for 'remove last'){}: """)
+        .format(c_dict[component], comp_string, displ)
         )
         cr = cr.lower()
         if cr in [str(x) for x in range(len(C_MAP[component]) - 1)]:
-            checkForCapabilities(component, cr)
-            if component == "ae":
-                # add ae to stack
-                if "None" in A_MAP[component]:
-                    A_MAP[component].remove("None")
-                A_MAP[component].append(cr)
+            matchCap, needCap = checkForCapabilities(component, cr)
+            if matchCap:
+                displ = ""
+                if component == "ae":
+                    # add ae to stack
+                    if "None" in A_MAP[component]:
+                        A_MAP[component].remove("None")
+                    A_MAP[component].append(cr)
+                else:
+                    # replace previous cr/cc
+                    prevComp = A_MAP[component]
+                    A_MAP[component] = cr
+                    if prevComp != "None":
+                        checkForCapabilities(component, prevComp, remove=True)
             else:
-                # replace previous cr/cc
-                A_MAP[component] = cr
+                # report unmatched capabilities
+                displ = ("\n[Input Capabilities aren't provided for {}: {} ]"
+                    ).format(getCompName(component, cr), needCap)
 
         if cr == "r":
             removeLastComponent(component)
@@ -341,10 +356,12 @@ def displayPipeline():
     print(("""The current pipeline consists of\n""" +
            """Collection Reader:\n\t{}""" +
            """Analysis Engine(s):\n\t{}""" +
-           """Collection Consumer:\n\t{}"""
+           """Collection Consumer:\n\t{}""" +
+           """Capabilities:\n\t{}\n"""
            ).format(getCompName("cr", A_MAP["cr"]) + "\n",
                 "; ".join([getCompName("ae", x) for x in A_MAP["ae"]]) + "\n",
-                getCompName("cc", A_MAP["cc"]) + "\n")
+                getCompName("cc", A_MAP["cc"]) + "\n",
+                "; ".join(sorted(set(CAP_PROVIDED))))
            )
 
 
