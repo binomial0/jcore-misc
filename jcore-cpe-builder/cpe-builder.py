@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+#### TODO:
+####    * type system hierarchy is not checked:
+####        e.g. BioSEM Relation Extractor needs 'Gene' as in-capability &
+####        JNET provides EntityMention (what kind of entities need to be
+####        specified but could easily be 'Gene')
+####        --> they are not compatible as seen by the cpe-builder because
+####            it's no exact match
 
 import json
 import os
@@ -269,6 +276,8 @@ def checkForCapabilities(comp, coKey, remove=False):
     needCap = JCOORDS[fullCat][cKey]["capabilities"]["in"]
 
     matchCap = False
+    missingCap = False
+    unmetCap = []
     if not remove:
         if DEBUG:
             print("Provided capabilities: {}\n".format(CAP_PROVIDED))
@@ -280,8 +289,10 @@ def checkForCapabilities(comp, coKey, remove=False):
         else:
             for inCap in needCap:
                 if inCap not in CAP_PROVIDED:
+                    missingCap = True
                     matchCap = False
-                else:
+                    unmetCap.append(inCap)
+                elif not missingCap:
                     matchCap = True
 
         if matchCap:
@@ -291,7 +302,7 @@ def checkForCapabilities(comp, coKey, remove=False):
         for oCap in remCap:
             CAP_PROVIDED.remove(oCap)
 
-    return matchCap, needCap
+    return matchCap, unmetCap
 
 
 def getComponent(component="ae"):
@@ -343,6 +354,7 @@ def getComponent(component="ae"):
                     ).format(getCompName(component, cr), needCap)
 
         if cr == "r":
+            displ = ""
             removeLastComponent(component)
 
     if cr == "q":
@@ -518,13 +530,17 @@ def buildCurrentPipeline():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        if sys.argv[1].lower() == "true":
-            DEBUG = True
+    if sys.version.startswith("3"):
+        if len(sys.argv) > 1:
+            if sys.argv[1].lower() == "true":
+                DEBUG = True
 
-    modifyPipeline()
+        modifyPipeline()
 
-    print("\nbuild pipeline ...")
-    sys.stdout.flush()
-    time.sleep(0.5)
-    buildCurrentPipeline()
+        print("\nbuild pipeline ...")
+        sys.stdout.flush()
+        time.sleep(0.5)
+        buildCurrentPipeline()
+    else:
+        print("Your Python Version is {}".format(sys.version))
+        print("Please use Python Version 3.x")
