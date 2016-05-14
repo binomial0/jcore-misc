@@ -54,6 +54,21 @@ def nodeHasTag(node, name, xlmns):
         return False
 
 if (__name__ == "__main__"):
+    basePomFile = pParentDir+os.path.sep+"pom.xml"
+    project = "base project"
+    if (os.path.exists(basePomFile)):
+        tree = ElementTree()
+        tree.parse(basePomFile)
+        root = tree.getroot()
+        xlmns = (root.tag).rstrip("project")
+
+        changeParentVersion(tree, toVersion, fromVersion, project, xlmns)
+        deleteSelfVersion(tree, project, xlmns)
+        changeDependenciesVersion(tree, project, xlmns)
+
+        tree.write(basePomFile,encoding="UTF-8",xml_declaration=True,
+                            default_namespace=xlmns[1:-1])
+
     for project in os.listdir(pParentDir):
         pPath = pParentDir+os.path.sep+project
         if (os.path.isdir(pPath) and (project not in gIgnore)):
