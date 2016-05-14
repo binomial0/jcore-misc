@@ -6,6 +6,8 @@
 ####        specified but could easily be 'Gene')
 ####        --> they are not compatible as seen by the cpe-builder because
 ####            it's no exact match
+####    * save pipeline comp info
+####    * modify coordinates and code to allow for bugfix versions
 
 import json
 import os
