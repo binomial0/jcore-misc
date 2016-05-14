@@ -413,7 +413,7 @@ def writePom():
         """\t\t<dependency>\n""" +
         """\t\t\t<groupId>de.julielab</groupId>\n""" +
         """\t\t\t<artifactId>{}</artifactId>\n""" +
-        """\t\t\t<version>${{jcore-version}}</version>\n""" +
+        """\t\t\t<version>[${{jcore-version}},]</version>\n""" +
         """\t\t</dependency>\n"""
         ).format(dep)
     dependencies = dependencies.rstrip("\n")
