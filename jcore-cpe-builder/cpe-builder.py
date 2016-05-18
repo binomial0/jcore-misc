@@ -1,13 +1,4 @@
 # -*- coding: utf-8 -*-
-#### TODO:
-####    * type system hierarchy is not checked:
-####        e.g. BioSEM Relation Extractor needs 'Gene' as in-capability &
-####        JNET provides EntityMention (what kind of entities need to be
-####        specified but could easily be 'Gene')
-####        --> they are not compatible as seen by the cpe-builder because
-####            it's no exact match
-####    * save pipeline comp info
-####    * modify coordinates and code to allow for bugfix versions
 
 import json
 import os
