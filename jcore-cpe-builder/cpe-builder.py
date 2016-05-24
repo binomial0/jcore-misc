@@ -6,6 +6,8 @@ import sys
 import subprocess
 import shutil
 import time
+import glob
+import shutil
 
 DEBUG = False
 WS = '\t'
@@ -471,6 +473,43 @@ def createDirs():
         if not os.path.exists(iDir):
             os.makedirs(iDir)
 
+def installTrove():
+    foo = "target"+os.sep+"dependency"
+    src_fi = "jcore-mstparser-ae-2.*.jar"
+    os.chdir(foo)
+    mst = glob.glob(src_fi)[0]
+
+    # extract trove jar from mst repo
+    subprocess.call(
+        ["jar","xf",mst,"repo/de/julielab/jules-trove/1.3/jules-trove-1.3.jar"]
+    )
+    # move trove jar to current dir
+    shutil.copy2("repo/de/julielab/jules-trove/1.3/jules-trove-1.3.jar","./")
+
+    # delete old folder
+    shutil.rmtree("repo/")
+
+    # install jules-trove using maven as well?
+    subprocess.call(
+         ["mvn","install:install-file","-Dfile=jules-trove-1.3.jar","-DgroupId=de.julielab",
+          "-DartifactId=jules-trove","-Dversion=1.3","-Dpackaging=jar"]
+    )
+
+def installDependencies():
+    print("install Dependencies...")
+    sys.stdout.flush()
+    time.sleep(0.5)
+    # run "installDependencies.sh" --> if all goes smoothly, fine
+    # else tell user to correct errors and run "installDependcies.sh" again
+    subprocess.call(
+        ["./installComponents.sh"]
+    )
+    # if a component is mst-parser, install jules-trove
+    # run script again?
+    for ae_key in A_MAP["ae"]:
+        ae_key = C_MAP["ae"][ae_key]
+        if ae_key.startswith("mst"):
+            installTrove()
 
 def buildCurrentPipeline():
     # COLLECTION READER
@@ -518,15 +557,21 @@ def buildCurrentPipeline():
     writePom()
     copyInstallScript()
     writeExecutionScript(fiName)
+    installDependencies()
 
     os.chdir("..")
 
+def checkSystemDependencies():
+    return False
 
 if __name__ == "__main__":
     if sys.version.startswith("3"):
         if len(sys.argv) > 1:
             if sys.argv[1].lower() == "true":
                 DEBUG = True
+
+        # check for UIMA and Maven
+        checkSystemDependencies()
 
         modifyPipeline()
 
