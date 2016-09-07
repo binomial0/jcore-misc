@@ -3,7 +3,7 @@
 
     "collection reader": {
         "ace": {
-            "desc": "de.julielab.jcore.reader.ace.desc.jcore-ace",
+            "desc": "de.julielab.jcore.reader.ace.desc.jcore-ace-reader",
             "name": "JCoRe ACE Reader",
             "mandatory": [
                 {"name": "inputDirectory",
@@ -26,7 +26,7 @@
             },
 
         "muc7": {
-            "desc": "de.julielab.jcore.reader.muc7.desc.jcore-muc7",
+            "desc": "de.julielab.jcore.reader.muc7.desc.jcore-muc7-reader",
             "name": "JCoRe MUC7 Reader",
             "mandatory": [
                 {"name": "InputDirectory",
