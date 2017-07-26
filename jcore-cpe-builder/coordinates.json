@@ -151,11 +151,23 @@
                 "default": "false"},
                 {"name": "PublicationDatesAsFile",
                 "type": "string",
-                "default": "data/publicationDates"}
+                "default": ""},
+                {"name": "SentencePerLine",
+                 "type": "boolean",
+                 "default": "false"},
+                {"name": "TokenByToken",
+                 "type": "boolean",
+                 "default": "false"},
+                {"name": "ReadSubDirs",
+                 "type": "boolean",
+                 "default": "false"},
+                {"name": "FileNameSplitUnderscore",
+                 "type": "boolean",
+                 "default": "false"}
                 ],
             "capabilities": {
                 "in": [],
-                "out": ["Date","pubmed.Header"]
+                "out": ["Date","pubmed.Header","Token","Sentence"]
                 }
             }
     },
