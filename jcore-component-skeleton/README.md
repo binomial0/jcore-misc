@@ -1,5 +1,6 @@
 # JCoRe Component Skeleton
 `Text that describes the component in brevity...`
+
 **Descriptor Path**:
 ```
 de.julielab.jcore.{reader, ae, consumer}.NAME.desc.ARTIFACT-NAME
