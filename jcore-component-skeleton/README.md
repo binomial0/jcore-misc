@@ -1,14 +1,14 @@
 # JCoRe Component Skeleton
-
+`Text that describes the component in brevity...`
 **Descriptor Path**:
 ```
 de.julielab.jcore.{reader, ae, consumer}.NAME.desc.ARTIFACT-NAME
 ```
 
 ### Objective
-
+`More thorough description`
 ### Requirements and Dependencies
-
+`Are there any requirements or dependencies for this component?`
 ### Using the CR - Descriptor Configuration
 
 **1. Parameters**
