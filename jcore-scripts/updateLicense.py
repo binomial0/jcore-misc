@@ -22,7 +22,7 @@ def replaceLicenseText(path, newLicenseFile):
 #####################################################################################################################
 
 if len(sys.argv) != 3:
-	print("usage: replaceHeader.py <path to directory> <path to license file>")
+	print("usage: updateLicense.py <path to directory> <path to license file>")
 
 else: 
  srcDir = str(sys.argv[1]) # source directory
