@@ -8,7 +8,7 @@ import os
 import sys
 import xml.etree.ElementTree as ElementTree
 
-def changeParentVersion(pTree, toVersion, pName, xmlns, xmlns_URI):
+def changeDescVersion(pTree, toVersion, pName, xmlns, xmlns_URI):
     for p in pTree.iter(tag=xmlns):
         for child in p:
             for v in child:
@@ -23,7 +23,7 @@ def changeParentVersion(pTree, toVersion, pName, xmlns, xmlns_URI):
 
 def nodeHasTag(node, name, xlmns):#if node e.g. has tag version
     if (node.tag == xlmns + name):
-        #print("nodeTag: ", node.tag, " xmlns + name : ", xlmns + name)
+        print("nodeTag: ", node.tag, " xmlns + name : ", xlmns + name)
         return True
     else:
         return False
@@ -66,6 +66,5 @@ else:
                             #print("xmlnsTag : ", xmlnsTag)
                             xmlns_URI = tag_uri(xmlns)
                             #print("Tag URI: " , xmlns_URI)
-                            changeParentVersion(tree, toVersion, descFile, xmlnsTag, xmlns_URI)
+                            changeDescVersion(tree, toVersion, descFile, xmlnsTag, xmlns_URI)
                 print("#######################################################################################################")
-                            
