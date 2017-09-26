@@ -36,7 +36,7 @@ def getfirstline(path):
 	with open(path, 'r') as fi:
 		firstline = fi.readline()
 	return firstline
-#main
+
 if len(sys.argv) != 4:
 	print("usage: updateLicense.py <path to directory> <path to license file> <path to new license header template>")
 
@@ -44,7 +44,7 @@ else:
  srcDir = str(sys.argv[1]) # source directory
  newLicenseFile = str(sys.argv[2]) # path to the file with the new license content
  newLicenseHeader = str(sys.argv[3]) #path to the file with new license header
- #walk recursively through source Directory
+#walk recursively through source Directory
  for dirpath, dirs, files in os.walk(srcDir):	
 	 for filename in files:
 		 path = os.path.join(dirpath,filename)
