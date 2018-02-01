@@ -48,8 +48,8 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git://github.com/JULIELab/jcore-ae-archetype</connection>
-    <developerConnection>scm:git:git://github.com/JULIELab/jcore-ae-archetype</developerConnection>
+    <connection>scm:git:git://github.com/JULIELab/jcore-ae-archetype.git</connection>
+    <developerConnection>scm:git:git://github.com/JULIELab/jcore-ae-archetype.git</developerConnection>
     <url>scm:git:https://github.com/JULIELab/jcore-misc/jcore-ae-archetype</url>
   </scm>
 
