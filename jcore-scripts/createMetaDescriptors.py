@@ -106,13 +106,13 @@ def mergeWithOldMeta(projectPath, description):
 	is manually inserted and the exposable attribute.
 	"""
 	metaDescFileName = projectPath + os.path.sep + META_DESC_IN_NAME
-	group = "default"
+	group = "general"
 	exposable = description["descriptors"] != None and len(description["descriptors"]) > 0;
 	if os.path.exists(metaDescFileName):
 		with open(metaDescFileName, 'r') as metaDescFile:
 			oldDescription = json.load(metaDescFile)
 			group = oldDescription["group"]
-			exposable = oldDescription["exposable"]
+			#exposable = oldDescription["exposable"]
 	description["group"] = group
 	description["exposable"] = exposable
 
