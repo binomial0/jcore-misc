@@ -88,8 +88,8 @@ def getDescriptors(projectpath):
 					category = "consumer"
 				if category != None:
 					# From the complete file name, exclude the system dependent part. That is, make the path relative to the
-					# project directory.
-					location = os.path.join(root, filename)[len(projectpath)+1:]
+					# project directory's src/main/resources directory.
+					location = os.path.join(root, filename)[len(projectpath+os.path.sep+os.path.sep.join(["src", "main", "resources"]))+1:]
 					# And then make it to be a lookup by name: Use a dot as the path separator and remove the file name extension
 					location = location.replace(os.path.sep, ".")
 					# Remove '.xml'
@@ -118,27 +118,30 @@ def mergeWithOldMeta(projectPath, description):
 
 
 if (__name__ == "__main__"):
-	pParentDir = sys.argv[1]
-	print ("Creating or updating {} files in repository {}".format(META_DESC_OUT_NAME, pParentDir))
-	numCreated = 0
-	for project in os.listdir(pParentDir):
-		pPath = pParentDir+project
-		pomFile = pPath + os.path.sep + "pom.xml"
+	if len(sys.argv) > 1:
+		pParentDir = sys.argv[1]
+		print ("Creating or updating {} files in repository {}".format(META_DESC_OUT_NAME, pParentDir))
+		numCreated = 0
+		for project in os.listdir(pParentDir):
+			pPath = pParentDir+project
+			pomFile = pPath + os.path.sep + "pom.xml"
 
-		if os.path.exists(pomFile):
-			artifactId, name, category, description = getArtifactInfo(pomFile)
-			if category != None:
-				description = {
-				 "name":name,
-				 "maven-artifact":artifactId,
-				 "description": description,
-				 "category":category
-				}
-				description["descriptors"] = getDescriptors(pPath)
-				mergeWithOldMeta(pPath, description)
-				jsonDesc = json.dumps(description, sort_keys=True, indent=4, separators=(",", ": ")) + os.linesep
-				with open(pPath + os.path.sep + META_DESC_OUT_NAME, 'w') as metaDescFile:
-					metaDescFile.write(jsonDesc)
-				numCreated = numCreated + 1
-	print ("Created or updated {} {} files in {}.".format(numCreated, META_DESC_OUT_NAME, pParentDir))
+			if os.path.exists(pomFile):
+				artifactId, name, category, description = getArtifactInfo(pomFile)
+				if category != None:
+					description = {
+					 "name":name,
+					 "maven-artifact":artifactId,
+					 "description": description,
+					 "category":category
+					}
+					description["descriptors"] = getDescriptors(pPath)
+					mergeWithOldMeta(pPath, description)
+					jsonDesc = json.dumps(description, sort_keys=True, indent=4, separators=(",", ": ")) + os.linesep
+					with open(pPath + os.path.sep + META_DESC_OUT_NAME, 'w') as metaDescFile:
+						metaDescFile.write(jsonDesc)
+					numCreated = numCreated + 1
+		print ("Created or updated {} {} files in {}.".format(numCreated, META_DESC_OUT_NAME, pParentDir))
+	else:
+		print ("You need to pass the local JCoRe repository location as parameter.")
 
