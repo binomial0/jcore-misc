@@ -12,6 +12,7 @@ import json
 import fnmatch
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import ParseError
+from collections import Counter
 
 # For testing we define in and out names so we can create new versions and compare
 META_DESC_IN_NAME = "component.meta"
@@ -112,7 +113,7 @@ def mergeWithOldMeta(projectPath, description):
 		with open(metaDescFileName, 'r') as metaDescFile:
 			oldDescription = json.load(metaDescFile)
 			group = oldDescription["group"]
-			#exposable = oldDescription["exposable"]
+			exposable = oldDescription["exposable"]
 	description["group"] = group
 	description["exposable"] = exposable
 
@@ -128,6 +129,16 @@ if (__name__ == "__main__"):
 
 			if os.path.exists(pomFile):
 				artifactId, name, category, description = getArtifactInfo(pomFile)
+				descriptors = getDescriptors(pPath)
+				descriptorCategories = [d["category"] for d in descriptors]
+				# The category is currently derived from the project name. This does
+				# not always work so well, for example with JCoRe projects.
+				# Thus, if we haven't found a category, check the descriptors.
+				if category == None and len(descriptorCategories) > 0:
+					# Counter.most_common(1) returns a list of the pair of the most common
+					# element and its count - thus, access the first list item, which is
+					# the pair, and from the pair the first element
+					category = Counter(descriptorCategories).most_common(1)[0][0]
 				if category != None:
 					description = {
 					 "name":name,
@@ -135,7 +146,7 @@ if (__name__ == "__main__"):
 					 "description": description,
 					 "category":category
 					}
-					description["descriptors"] = getDescriptors(pPath)
+					description["descriptors"] = descriptors
 					mergeWithOldMeta(pPath, description)
 					jsonDesc = json.dumps(description, sort_keys=True, indent=4, separators=(",", ": ")) + os.linesep
 					with open(pPath + os.path.sep + META_DESC_OUT_NAME, 'w') as metaDescFile:
