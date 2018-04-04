@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>jcore-projects-reader-archetype</artifactId>
+  <packaging>maven-archetype</packaging>
+
+  <name>JCoRe Projects Reader Archetype</name>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.archetype</groupId>
+        <artifactId>archetype-packaging</artifactId>
+        <version>3.0.1</version>
+      </extension>
+    </extensions>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-archetype-plugin</artifactId>
+          <version>3.0.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <description>An archetype to quickly create new JCoRe reader in the projects repository.</description>
+
+  <url>https://github.com/JULIELab/jcore-misc/tree/master/jcore-projects-reader-archetype</url>
+
+  <developers>
+    <developer>
+      <id>faessler</id>
+      <name>Erik Faessler</name>
+      <email>erik.faessler@uni-jena.de</email>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>BSD 2-Clause</name>
+      <url>https://opensource.org/licenses/BSD-2-Clause</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git://github.com/JULIELab/jcore-projects-reader-archetype.git</connection>
+    <developerConnection>scm:git:git://github.com/JULIELab/jcore-projects-reader-archetype.git</developerConnection>
+    <url>scm:git:https://github.com/JULIELab/jcore-misc/jcore-projects-reader-archetype</url>
+  </scm>
+
+  <parent>
+  	<groupId>de.julielab</groupId>
+  	<artifactId>jcore-parent</artifactId>
+  	<version>2.3.0-SNAPSHOT</version>
+  </parent>
+</project>
