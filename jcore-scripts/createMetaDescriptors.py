@@ -85,7 +85,7 @@ def getDescriptors(projectpath):
 					category = "ae"
 					if outputsNewCASes:
 						category = "multiplier"
-					if "consumer" in filename or "writer" in filename:
+					if "consumer" in filename.lower() or "writer" in filename.lower():
 						category = "consumer"
 				if descriptorRoot.tag.endswith("casConsumerDescription"):
 					category = "consumer"
