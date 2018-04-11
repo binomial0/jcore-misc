@@ -85,6 +85,8 @@ def getDescriptors(projectpath):
 					category = "ae"
 					if outputsNewCASes:
 						category = "multiplier"
+					if "consumer" in filename or "writer" in filename:
+						category = "consumer"
 				if descriptorRoot.tag.endswith("casConsumerDescription"):
 					category = "consumer"
 				if category != None:
@@ -131,21 +133,21 @@ if (__name__ == "__main__"):
 				artifactId, name, category, description = getArtifactInfo(pomFile)
 				descriptors = getDescriptors(pPath)
 				descriptorCategories = [d["category"] for d in descriptors]
-				# The category is currently derived from the project name. This does
-				# not always work so well, for example with JCoRe projects.
-				# Thus, if we haven't found a category, check the descriptors.
-				if category == None and len(descriptorCategories) > 0:
-					# Counter.most_common(1) returns a list of the pair of the most common
-					# element and its count - thus, access the first list item, which is
-					# the pair, and from the pair the first element
-					category = Counter(descriptorCategories).most_common(1)[0][0]
-				if category != None:
+				if category != None or len(descriptors) > 0:
 					description = {
 					 "name":name,
 					 "maven-artifact":artifactId,
 					 "description": description,
-					 "category":category
+					 "categories":[category]
 					}
+					# Ultimately, the descriptors determine in which categories the component
+					# actually belongs.
+					if len(descriptorCategories) > 0:
+						categories = set()
+						if category != None:
+							categories.add(category)
+						categories.update(descriptorCategories)
+						description["categories"] = [c for c in categories]
 					description["descriptors"] = descriptors
 					mergeWithOldMeta(pPath, description)
 					jsonDesc = json.dumps(description, sort_keys=True, indent=4, separators=(",", ": ")) + os.linesep
