@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.uima.analysis_component.AnalysisComponent;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReader;
@@ -50,7 +51,8 @@ public class DescriptorCreator {
 		readers = readers.stream().filter(c -> c.getPackage().getName().contains("de.julielab.jcore.reader"))
 				.collect(toList());
 		aes = aes.stream().filter(c -> c.getPackage().getName().contains("de.julielab.jcore.ae")
-				|| c.getPackage().getName().contains("de.julielab.jcore.consumer")).collect(toList());
+				|| c.getPackage().getName().contains("de.julielab.jcore.consumer")
+				|| c.getPackage().getName().contains("de.julielab.jcore.multiplier")).collect(toList());
 
 		if (readers.isEmpty() && aes.isEmpty()) {
 			log.warn("No JCoRe UIMA component classes were found.");
@@ -83,7 +85,13 @@ public class DescriptorCreator {
 
 	private int writeComponentDescriptor(String outputRoot, Class<?> cls, ResourceCreationSpecifier d,
 			String componentType, int num) throws SAXException, IOException {
-		String componentName = getComponentName();
+		String componentName = null;
+		if (d instanceof  CollectionReaderDescription)
+            componentName = ((CollectionReaderDescription) d).getImplementationName();
+		if (d instanceof AnalysisEngineDescription)
+            componentName = ((AnalysisEngineDescription) d).getImplementationName();
+		if (StringUtils.isBlank(componentName))
+            componentName = getComponentName();
 		String filename = componentName;
 		if (num > 0)
 			filename += num;
