@@ -40,6 +40,6 @@ public class DescriptorCreatorTest {
 	}
 
 	private boolean containsDescriptor(File dir) {
-		return Stream.of(dir.list()).filter(f -> f.contains(DescriptorCreator.getComponentName())).findAny().isPresent();
+		return Stream.of(dir.list()).filter(f -> f.contains(".xml")).findAny().isPresent();
 	}
 }
