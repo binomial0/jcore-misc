@@ -70,14 +70,13 @@ public class DescriptorCreator {
                         "Multiple JCoRe UIMA component classes were found: {} {}. Multiple descriptors will be created with a running index. Manual curation will be required.",
                         readers, aes);
             }
-            int num = 0;
             for (Class<? extends CollectionReader> cls : readers) {
                 CollectionReaderDescription d = CollectionReaderFactory.createReaderDescription(cls);
-                num += writeComponentDescriptor(outputRoot, cls, d, "collection reader", num);
+                writeComponentDescriptor(outputRoot, cls, d, "collection reader");
             }
             for (Class<? extends AnalysisComponent> cls : aes) {
                 AnalysisEngineDescription d = AnalysisEngineFactory.createEngineDescription(cls);
-                num += writeComponentDescriptor(outputRoot, cls, d, "analysis engine / consumer", num);
+                writeComponentDescriptor(outputRoot, cls, d, "analysis engine / consumer");
             }
         }
     }
@@ -91,8 +90,8 @@ public class DescriptorCreator {
         return components;
     }
 
-    private int writeComponentDescriptor(String outputRoot, Class<?> cls, ResourceCreationSpecifier d,
-                                         String componentType, int num) throws SAXException, IOException {
+    private void writeComponentDescriptor(String outputRoot, Class<?> cls, ResourceCreationSpecifier d,
+                                         String componentType) throws SAXException, IOException {
         String componentName = null;
         if (d instanceof CollectionReaderDescription)
             componentName = ((CollectionReaderDescription) d).getImplementationName();
@@ -101,8 +100,6 @@ public class DescriptorCreator {
         if (StringUtils.isBlank(componentName))
             componentName = getComponentName();
         String filename = componentName;
-        if (num > 0)
-            filename += num;
         filename += ".xml";
         List<String> pathElements = Arrays.asList(outputRoot,
                 cls.getPackage().getName().replaceAll("\\.", File.separator), DESC, filename);
@@ -112,8 +109,6 @@ public class DescriptorCreator {
         log.info("Writing {} descriptor from class {} to {}", componentType, cls, outputPath);
         try (Writer w = FileUtilities.getWriterToFile(outputPath)) {
             d.toXML(w);
-            ++num;
         }
-        return num;
     }
 }
