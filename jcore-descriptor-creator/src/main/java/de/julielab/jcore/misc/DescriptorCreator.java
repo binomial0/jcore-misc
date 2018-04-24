@@ -65,11 +65,7 @@ public class DescriptorCreator {
         if (readers.isEmpty() && aes.isEmpty()) {
             log.warn("No JCoRe UIMA component classes were found.");
         } else {
-            if (readers.size() + aes.size() > 1) {
-                log.warn(
-                        "Multiple JCoRe UIMA component classes were found: {} {}. Multiple descriptors will be created with a running index. Manual curation will be required.",
-                        readers, aes);
-            }
+
             for (Class<? extends CollectionReader> cls : readers) {
                 CollectionReaderDescription d = CollectionReaderFactory.createReaderDescription(cls);
                 writeComponentDescriptor(outputRoot, cls, d, "collection reader");

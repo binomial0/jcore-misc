@@ -106,18 +106,24 @@ def mergeWithOldMeta(projectPath, description):
 	and extracts information from it that can't be automatically
 	derived from the POM and the descriptors.
 	This is currently the group in which the component
-	is manually inserted and the exposable attribute.
+	is manually inserted, the exposable attribute and the base
+	project (only for jcore-projects).
 	"""
 	metaDescFileName = projectPath + os.path.sep + META_DESC_IN_NAME
 	group = "general"
 	exposable = description["descriptors"] != None and len(description["descriptors"]) > 0;
+	baseProject = None
 	if os.path.exists(metaDescFileName):
 		with open(metaDescFileName, 'r') as metaDescFile:
 			oldDescription = json.load(metaDescFile)
 			group = oldDescription["group"]
 			exposable = oldDescription["exposable"]
+			if "base-project" in oldDescription:
+				baseProject = oldDescription["base-project"]
 	description["group"] = group
 	description["exposable"] = exposable
+	if baseProject != None:
+		description["base-project"] = baseProject
 
 
 if (__name__ == "__main__"):
