@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toList;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +55,9 @@ public class DescriptorCreator {
         readers = readers.stream().filter(c -> c.getPackage().getName().contains("de.julielab.jcore.reader"))
                 .collect(toList());
         // Since consumers and also multipliers can be or are AnalysisComponents, were may list all component categories here.
-        aes = aes.stream().filter(c -> c.getPackage().getName().contains("de.julielab.jcore.ae")
+        // Also, remove abstract classes
+        aes = aes.stream().filter(c -> (c.getModifiers() & Modifier.ABSTRACT) > 0).
+                filter(c -> c.getPackage().getName().contains("de.julielab.jcore.ae")
                 || c.getPackage().getName().contains("de.julielab.jcore.consumer")
                 || c.getPackage().getName().contains("de.julielab.jcore.multiplier")
                 || c.getPackage().getName().contains("de.julielab.jcore.reader")).collect(toList());
