@@ -1,6 +1,7 @@
 package de.julielab.jcore.misc;
 
 import static java.util.stream.Collectors.joining;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -29,14 +30,19 @@ public class DescriptorCreatorTest {
 		File crDir = new File(outputRoot + Stream.of("de", "julielab", "jcore", "reader", "testreader", "desc").collect(joining(File.separator)));
 		File aeDir = new File(outputRoot + Stream.of("de", "julielab", "jcore", "ae", "testae", "desc").collect(joining(File.separator)));
 		File consumerDir = new File(outputRoot + Stream.of("de", "julielab", "jcore", "consumer", "testconsumer", "desc").collect(joining(File.separator)));
+		File multiplierDir = new File(outputRoot + Stream.of("de", "julielab", "jcore", "multiplier", "testmultiplier", "desc").collect(joining(File.separator)));
+        File abstractAeDir = new File(outputRoot + Stream.of("de", "julielab", "jcore", "ae", "abstractae", "desc").collect(joining(File.separator)));
 		
 		assertTrue(crDir.exists());
 		assertTrue(aeDir.exists());
 		assertTrue(consumerDir.exists());
+		assertTrue(multiplierDir.exists());
+        assertFalse(abstractAeDir.exists());
 		
 		assertTrue(containsDescriptor(crDir));
 		assertTrue(containsDescriptor(aeDir));
 		assertTrue(containsDescriptor(consumerDir));
+		assertTrue(containsDescriptor(multiplierDir));
 	}
 
 	private boolean containsDescriptor(File dir) {

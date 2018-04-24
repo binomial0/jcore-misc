@@ -56,7 +56,7 @@ public class DescriptorCreator {
                 .collect(toList());
         // Since consumers and also multipliers can be or are AnalysisComponents, were may list all component categories here.
         // Also, remove abstract classes
-        aes = aes.stream().filter(c -> (c.getModifiers() & Modifier.ABSTRACT) == 0).
+        aes = aes.stream().filter(c -> !Modifier.isAbstract(c.getModifiers())).
                 filter(c -> c.getPackage().getName().contains("de.julielab.jcore.ae")
                 || c.getPackage().getName().contains("de.julielab.jcore.consumer")
                 || c.getPackage().getName().contains("de.julielab.jcore.multiplier")
