@@ -10,6 +10,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.analysis_component.AnalysisComponent;
@@ -18,7 +19,9 @@ import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
+import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
 import org.apache.uima.resource.ResourceCreationSpecifier;
+import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -58,20 +61,27 @@ public class DescriptorCreator {
         // Also, remove abstract classes
         aes = aes.stream().filter(c -> !Modifier.isAbstract(c.getModifiers())).
                 filter(c -> c.getPackage().getName().contains("de.julielab.jcore.ae")
-                || c.getPackage().getName().contains("de.julielab.jcore.consumer")
-                || c.getPackage().getName().contains("de.julielab.jcore.multiplier")
-                || c.getPackage().getName().contains("de.julielab.jcore.reader")).collect(toList());
+                        || c.getPackage().getName().contains("de.julielab.jcore.consumer")
+                        || c.getPackage().getName().contains("de.julielab.jcore.multiplier")
+                        || c.getPackage().getName().contains("de.julielab.jcore.reader")).collect(toList());
 
         if (readers.isEmpty() && aes.isEmpty()) {
             log.warn("No JCoRe UIMA component classes were found.");
         } else {
-
+            Stream<String> typeDescNamesStream = Stream.of(TypeSystemDescriptionFactory.scanTypeDescriptors()).
+                    // the the path of descriptors internally in the jcore-types JAR
+                            map(loc -> loc.substring(loc.indexOf('!') + 2)).
+                    // remove the .xml extension
+                            map(loc -> loc.substring(0, loc.length() - 4)).
+                    // make de/julielab/... to de.julielab....
+                            map(loc -> loc.replaceAll("/", "."));
+            TypeSystemDescription tsd = TypeSystemDescriptionFactory.createTypeSystemDescription(typeDescNamesStream.toArray(String[]::new));
             for (Class<? extends CollectionReader> cls : readers) {
-                CollectionReaderDescription d = CollectionReaderFactory.createReaderDescription(cls);
+                CollectionReaderDescription d = CollectionReaderFactory.createReaderDescription(cls, tsd);
                 writeComponentDescriptor(outputRoot, cls, d, "collection reader");
             }
             for (Class<? extends AnalysisComponent> cls : aes) {
-                AnalysisEngineDescription d = AnalysisEngineFactory.createEngineDescription(cls);
+                AnalysisEngineDescription d = AnalysisEngineFactory.createEngineDescription(cls, tsd);
                 writeComponentDescriptor(outputRoot, cls, d, "analysis engine / consumer");
             }
         }
@@ -87,7 +97,7 @@ public class DescriptorCreator {
     }
 
     private void writeComponentDescriptor(String outputRoot, Class<?> cls, ResourceCreationSpecifier d,
-                                         String componentType) throws SAXException, IOException {
+                                          String componentType) throws SAXException, IOException {
         String componentName = null;
         if (d instanceof CollectionReaderDescription)
             componentName = ((CollectionReaderDescription) d).getImplementationName();

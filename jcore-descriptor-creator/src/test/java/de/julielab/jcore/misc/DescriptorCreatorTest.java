@@ -20,7 +20,7 @@ public class DescriptorCreatorTest {
 	@BeforeClass
 	@AfterClass
 	public static void shutdown() throws IOException {
-		FileUtils.deleteDirectory(new File(Arrays.asList("src", "test", "resources", "de").stream().collect(joining(File.separator))));
+		//FileUtils.deleteDirectory(new File(Arrays.asList("src", "test", "resources", "de").stream().collect(joining(File.separator))));
 	}
 	@Test
 	public void testRun() throws Exception {
