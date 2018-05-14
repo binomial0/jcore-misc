@@ -69,12 +69,12 @@ public class DescriptorCreator {
             log.warn("No JCoRe UIMA component classes were found.");
         } else {
             Stream<String> typeDescNamesStream = Stream.of(TypeSystemDescriptionFactory.scanTypeDescriptors()).
-                    // the the path of descriptors internally in the jcore-types JAR
-                            map(loc -> loc.substring(loc.indexOf('!') + 2)).
                     // remove the .xml extension
                             map(loc -> loc.substring(0, loc.length() - 4)).
-                    // make de/julielab/... to de.julielab....
-                            map(loc -> loc.replaceAll("/", "."));
+                    // make path/to/descriptor/de/julielab/... to path.to.descriptor.de.julielab....
+                            map(loc -> loc.replaceAll("/", ".")).
+                    // remove everything before "de.julielab.jcore.types"
+                            map(loc -> loc.substring(loc.indexOf("de.julielab.jcore.types")));
             TypeSystemDescription tsd = TypeSystemDescriptionFactory.createTypeSystemDescription(typeDescNamesStream.toArray(String[]::new));
             for (Class<? extends CollectionReader> cls : readers) {
                 CollectionReaderDescription d = CollectionReaderFactory.createReaderDescription(cls, tsd);
