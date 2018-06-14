@@ -1,0 +1,23 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+<collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <implementationName>${uimaReaderClassname}</implementationName>
+  <processingResourceMetaData>
+    <name>${artifactName}</name>
+    <description>This is only a placeholder descriptor. Please use UIMAfit to annotate the component parameters. Then employ the jcore-descriptor-creator's main method to build the descriptor from the reader class ${uimaReaderClassname}. The jcore-descriptor-creator is already on the classpath as a Maven dependency.</description>
+    <version>${version}</version>
+    <vendor>JULIE Lab Jena, Germany</vendor>
+    <configurationParameters/>
+    <configurationParameterSettings/>
+    <typeSystemDescription/>
+    <capabilities/>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>true</outputsNewCASes>
+    </operationalProperties>
+  </processingResourceMetaData>
+</collectionReaderDescription>
