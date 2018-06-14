@@ -10,7 +10,7 @@ ${componentDescription}
 
 ### Requirements and Dependencies
 
-### Using the CR - Descriptor Configuration
+### Using the AE - Descriptor Configuration
 
 **1. Parameters**
 
