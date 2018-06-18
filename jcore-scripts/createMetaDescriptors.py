@@ -143,7 +143,7 @@ def mergeWithOldMeta(projectPath, description):
 
 if (__name__ == "__main__"):
 	pPath = None
-	validParameters = ["-c", "-i", "-m", "-v", "-u"]
+	validParameters = ["-c", "-i", "-r", "-v", "-u"]
 	booleanParameters = ["-i", "-c"]
 	cliParams = {}
 	accountedParams = 0
@@ -204,20 +204,20 @@ if (__name__ == "__main__"):
 					numCreated = numCreated + 1
 			print ("Created or updated {} {} files in {}.".format(numCreated, META_DESC_OUT_NAME, pPath))
 		if "-i" in cliParams.keys():
-			if "-m" not in cliParams.keys():
-				print("You need to specify the module to install the component into")
+			if "-r" not in cliParams.keys():
+				print("You need to specify the repository name to install the component into (-r parameter)")
 				sys.exit(3)
 			if "-v" not in cliParams.keys():
-				print("You need to specify the module version to install the component into")
+				print("You need to specify the module version to install the component into (-v parameter)")
 				sys.exit(4)
 			repository = {}
-			repository["name"]     = cliParams["-m"]
+			repository["name"]     = cliParams["-r"]
 			repository["version"]  = cliParams["-v"]
 			jcoreCacheDir        = expanduser("~") + os.path.sep + ".jcore-pipeline-builder"
 			moduleDir            = jcoreCacheDir + os.path.sep + repository["name"] + os.path.sep + repository["version"]
 			repositoriesListPath = jcoreCacheDir + os.path.sep + "repositories.json"
 			componentlistPath    = moduleDir + os.path.sep + "componentlist.json"
-			print("Installing descriptor into " + componentlistPath)
+			print("Installing meta description into " + componentlistPath + ". Note that the Maven artifact itself needs to be installed into your (local) repository as well.")
 			if not os.path.isdir(moduleDir):
 				os.makedirs(moduleDir)
 			repositories    = None
@@ -262,6 +262,9 @@ if (__name__ == "__main__"):
 					print("You need to specify whether the repository can be automatically updated or not (-u true/false)")
 					sys.exit(6)
 				repository["updateable"] = cliParams["-u"].lower() == "True"
+				# The type is a name for the actual repository class in the pipeline builder. We also support
+				# "GitHubRepository" but it is rather unprobably that this would created using this script.
+				repository["type"] = "ComponentRepository"
 				repositories.append(repository)
 				# Write the updated repository list
 				with open(repositoriesListPath, "w") as repositoriesFile:
