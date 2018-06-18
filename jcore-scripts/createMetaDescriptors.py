@@ -8,6 +8,7 @@ all projects in jcore-base.
 """
 import os
 import sys
+from os.path import expanduser
 import json
 import fnmatch
 import xml.etree.ElementTree as ET
@@ -34,8 +35,12 @@ def getArtifactInfo(pomFile):
 		ns = {"d":"http://maven.apache.org/POM/4.0.0"}
 		root = ET.parse(pomFile)
 		nameNodes = root.findall("./d:name", ns)
-		descriptionNodes = root.findall("./d:description", ns)
-		artifactIdNodes = root.findall("./d:artifactId", ns)
+		descriptionNodes   = root.findall("./d:description", ns)
+		artifactIdNodes    = root.findall("./d:artifactId", ns)
+		groupIdNodes       = root.findall("./d:groupId", ns)
+		versionNodes       = root.findall("./d:version", ns)
+		parentVersionNodes = root.findall("./d:parent/d:version", ns)
+		parentGroupIdNodes = root.findall("./d:parent/d:groupId", ns)
 
 		name = ""
 		description = ""
@@ -55,7 +60,17 @@ def getArtifactInfo(pomFile):
 		if (artifactId.endswith("writer")):
 			category = "consumer"
 
-		return artifactId, name, category, description
+		artifact = {}
+		artifact["artifactId"]  = artifactId
+		artifact["groupId"]     = getNodeText(groupIdNodes)
+		artifact["version"]     = getNodeText(versionNodes)
+		if len(groupIdNodes) == 0:
+			artifact["groupId"] = getNodeText(parentGroupIdNodes)
+		if len(versionNodes) == 0:
+			artifact["version"] = getNodeText(parentVersionNodes)
+
+		
+		return artifact, name, category, description
 
 def getDescriptors(projectpath):
 	"""
@@ -127,22 +142,49 @@ def mergeWithOldMeta(projectPath, description):
 
 
 if (__name__ == "__main__"):
-	if len(sys.argv) > 1:
-		pParentDir = sys.argv[1]
-		print ("Creating or updating {} files in repository {}".format(META_DESC_OUT_NAME, pParentDir))
-		numCreated = 0
-		for project in os.listdir(pParentDir):
-			pPath = pParentDir+project
+	pPath = None
+	validParameters = ["-c", "-i", "-m", "-v", "-u"]
+	booleanParameters = ["-i", "-c"]
+	cliParams = {}
+	accountedParams = 0
+	for i in range(len(sys.argv)):
+		param = sys.argv[i]
+		if param.startswith("-"):
+			if param not in booleanParameters and (i+1 >= len(sys.argv) or sys.argv[i+1].startswith("-")):
+				print("Missing value for parameter " + param)
+				sys.exit(1)
+			if param not in validParameters:
+				print("Unknown parameter: " + param)
+				sys.exit(2)
+			if param in booleanParameters:
+				cliParams[param] = True
+				accountedParams = i
+			else:
+				cliParams[param] = sys.argv[i+1]
+				accountedParams = i+1
+			
+	if accountedParams == len(sys.argv)-1:
+		for line in sys.stdin:
+			if pPath == None:
+				pPath = line
+	else:
+		if len(sys.argv) > 1:
+			pPath = sys.argv[-1]
+
+	if pPath != None:
+		if "-c" in cliParams.keys():
+			print ("Creating or updating {} files in directory {}".format(META_DESC_OUT_NAME, pPath))
+			numCreated = 0
 			pomFile = pPath + os.path.sep + "pom.xml"
 
 			if os.path.exists(pomFile):
-				artifactId, name, category, description = getArtifactInfo(pomFile)
+				artifact, name, category, description = getArtifactInfo(pomFile)
 				descriptors = getDescriptors(pPath)
 				descriptorCategories = [d["category"] for d in descriptors]
 				if category != None or len(descriptors) > 0:
 					description = {
 					 "name":name,
-					 "maven-artifact":artifactId,
+					 "maven-artifact":artifact,
 					 "description": description,
 					 "categories":[category]
 					}
@@ -160,7 +202,86 @@ if (__name__ == "__main__"):
 					with open(pPath + os.path.sep + META_DESC_OUT_NAME, 'w') as metaDescFile:
 						metaDescFile.write(jsonDesc)
 					numCreated = numCreated + 1
-		print ("Created or updated {} {} files in {}.".format(numCreated, META_DESC_OUT_NAME, pParentDir))
+			print ("Created or updated {} {} files in {}.".format(numCreated, META_DESC_OUT_NAME, pPath))
+		if "-i" in cliParams.keys():
+			if "-m" not in cliParams.keys():
+				print("You need to specify the module to install the component into")
+				sys.exit(3)
+			if "-v" not in cliParams.keys():
+				print("You need to specify the module version to install the component into")
+				sys.exit(4)
+			repository = {}
+			repository["name"]     = cliParams["-m"]
+			repository["version"]  = cliParams["-v"]
+			jcoreCacheDir        = expanduser("~") + os.path.sep + ".jcore-pipeline-builder"
+			moduleDir            = jcoreCacheDir + os.path.sep + repository["name"] + os.path.sep + repository["version"]
+			repositoriesListPath = jcoreCacheDir + os.path.sep + "repositories.json"
+			componentlistPath    = moduleDir + os.path.sep + "componentlist.json"
+			print("Installing descriptor into " + componentlistPath)
+			if not os.path.isdir(moduleDir):
+				os.makedirs(moduleDir)
+			repositories    = None
+			metaDescription = None
+			componentlist   = None
+			# Read existing repositories list
+			if os.path.isfile(repositoriesListPath):
+				with open(repositoriesListPath, "r") as repositoriesFile:
+					repositories = json.load(repositoriesFile)
+			else:
+				repositories = []
+			# Read the meta description to install
+			metaDescriptorPath = None
+			if os.path.isdir(pPath):
+				metaDescriptorPath = pPath + os.path.sep + META_DESC_IN_NAME
+				if not os.path.isfile(metaDescriptorPath):
+					print("Could not find meta descriptor file " + metaDescriptorPath + " for installation")
+					sys.exit(5)
+			elif os.path.isfile(pPath):
+				metaDescriptorPath = pPath
+			else:
+				print("Could not find meta descriptor file at directory or file " + metaDescriptorPath + " for installation")
+				sys.exit(5)
+			with open(metaDescriptorPath, "r") as metaDescriptorFile:
+				metaDescription = json.load(metaDescriptorFile)
+			# Read the component list of the repository to install into
+			if (os.path.isfile(componentlistPath)):
+				with open(componentlistPath, "r") as componentlistFile:
+					componentlist = json.load(componentlistFile)
+			else:
+				componentlist = []
+				
+			# Find the specified repository in the list of existing repositories or add it
+			repositoryIndex = -1
+			for i in range(len(repositories)):
+				rep = repositories[i]
+				if rep["name"] == repository["name"] and rep["version"] == repository["version"]:
+					repositoryIndex = i
+			if repositoryIndex == -1:
+				# The repository has not been created yet, add it
+				if "-u" not in cliParams.keys():
+					print("You need to specify whether the repository can be automatically updated or not (-u true/false)")
+					sys.exit(6)
+				repository["updateable"] = cliParams["-u"].lower() == "True"
+				repositories.append(repository)
+				# Write the updated repository list
+				with open(repositoriesListPath, "w") as repositoriesFile:
+					repositoriesFile.write(json.dumps(repositories, sort_keys=True, indent=4, separators=(",", ": ")) + os.linesep)
+			
+			# Add the meta description to the component list of the repository
+			componentIndex = -1
+			artifactId = metaDescription["maven-artifact"]["artifactId"]
+			groupId = metaDescription["maven-artifact"]["groupId"]
+			version = metaDescription["maven-artifact"]["version"]
+			for i in range(len(componentlist)):
+				comp = componentlist[i]
+				if comp["maven-artifact"]["artifactId"] == artifactId and comp["maven-artifact"]["groupId"] == groupId and comp["maven-artifact"]["version"] == version:
+					componentIndex = i
+			if componentIndex == -1:
+				componentlist.append(metaDescription)
+			else:
+				componentlist[componentIndex] = metaDescription
+			with open(componentlistPath, "w") as componentlistFile:
+				componentlistFile.write(json.dumps(componentlist, sort_keys=True, indent=4, separators=(",", ": ")) + os.linesep)
 	else:
-		print ("You need to pass the local JCoRe repository location as parameter.")
+		print ("You need to pass UIMA component project directory as a parameter.")
 
