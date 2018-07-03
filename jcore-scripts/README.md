@@ -12,3 +12,9 @@ For instance to update all modules of `jcore-base` that is located in `/home/git
 python updatePomVersion.py /home/git/jcore-base 2.1.0-SNAPSHOT 2.0.0
 ```
 The script is not compatible with python version < 3.
+
+## updateUIMAVersions.py
+This script updates the version tags in UIMA Descriptor files.  
+It takes two arguments: the new version and the directory in which to look for UIMA Descriptors.
+
+It sometimes reformats the code a little bit (for example, <tag/> becomes <tag />)
